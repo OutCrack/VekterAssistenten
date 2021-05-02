@@ -48,6 +48,23 @@ const ProfileScreen = (props) => {
       <TouchableOpacity onPress={() => console.log('onItemPressed("settings")')}>
         <View style={styles.rowContainer}>
           <View style={styles.btnIconContainer}>
+            <Icon size={30} name={"mail"} color={Colors.primaryText} />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.rowText}>Innboks</Text>
+          </View>
+          <View style={styles.arrowIcon}>
+            <Icon
+              size={30}
+              name={"md-arrow-forward"}
+              color={Colors.secondary}
+            />
+          </View>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => console.log('onItemPressed("settings")')}>
+        <View style={styles.rowContainer}>
+          <View style={styles.btnIconContainer}>
             <Icon size={30} name={"settings"} color={Colors.primaryText} />
           </View>
           <View style={styles.textContainer}>

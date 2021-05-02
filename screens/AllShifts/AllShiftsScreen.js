@@ -260,7 +260,9 @@ const AllShiftsScreen = (props) => {
         }
       />
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("AddShift")}
+        onPress={() => props.navigation.navigate("AddShift", {
+          allShifts: allShifts
+        })}
         style={styles.addShiftButton}
       >
         <Ionicons name={"md-add"} size={30} color="#052055" />

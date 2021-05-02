@@ -18,6 +18,8 @@ import Separator from "../../components/Separator";
 import { isValidTime } from "../../utility/validation";
 
 const AddShiftScreen = (props) => {
+  const { allShifts } = props.route.params;
+
   const [btnText, setBtnText] = useState("Lagre ny vakt");
   const [id, setId] = useState();
   const [type, setType] = useState("normal");
@@ -89,22 +91,31 @@ const AddShiftScreen = (props) => {
 
     if (btnText === "Lagre ny vakt") {
       dates.forEach((date) => {
-        dispatch(
-          shiftActions.createShift(
-            type,
-            name,
-            shiftID,
-            address,
-            date,
-            startTime,
-            endTime,
-            overtime,
-            paidLunch,
-            note
-          )
-        );
+        if (!findShift(date, startTime, endTime)) {
+          dispatch(
+            shiftActions.createShift(
+              type,
+              name,
+              shiftID,
+              address,
+              date,
+              startTime,
+              endTime,
+              overtime,
+              paidLunch,
+              note
+            )
+          );
+          props.navigation.goBack();
+        } else {
+          Alert.alert(
+            "Kan ikke opprette ny vakt.",
+            "En vakt er allerede registret på den dagen i det tidsrommet.",
+            [{ text: "Ok", style: "cancel" }],
+            { cancelable: true }
+          );
+        }
       });
-      props.navigation.goBack();
     } else if (btnText === "Rediger vakt") {
       // edit shift
       dispatch(
@@ -143,6 +154,47 @@ const AddShiftScreen = (props) => {
     }
   };
 
+  //Checks if there is a registered shift om the same date and time
+  const findShift = (date, startTime, endTime) => {
+    let isFound = false;
+    const startT = startTime.split(":");
+    const endT = endTime.split(":");
+
+    allShifts.forEach((shift) => {
+      const shiftST = shift.startTime.split(":");
+      const shiftET = shift.endTime.split(":");
+      if (shift.date === date) {
+        console.log("Date Found");
+        // console.log(startT[0] < endT[0], shiftST, shiftET);
+        if (startT[0] <= shiftST[0] && endT[0] == shiftST[0]) {
+          if (endT[1] > shiftST[1]) {
+            console.log("Time Found");
+            isFound = true;
+            return;
+          }
+        } else if (startT[0] < shiftST[0] && endT[0] > shiftST[0]) {
+          isFound = true;
+          return;
+        } else if(startT[0] > shiftST[0] && endT[0] < shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] == shiftET[0] && endT[0] > shiftET[0]) {
+          if (startT[1] < shiftET[1]) {
+            isFound = true;
+            return;
+          }
+        }
+      }
+    });
+    return isFound;
+  };
+
   // Changes 4 digits to XX:XX format
   const timeChangeHandler = (input, type) => {
     switch (type) {
@@ -159,8 +211,8 @@ const AddShiftScreen = (props) => {
             );
           } else {
             Alert.alert(
-              "Tid ikke gjyldig",
-              "Fyll inn tid riktig",
+              "Tid ikke gjyldig!",
+              "Fyll inn tid på riktig måte.",
               [{ text: "Ok", style: "cancel" }],
               { cancelable: true }
             );
@@ -181,10 +233,10 @@ const AddShiftScreen = (props) => {
                 splitString[2] +
                 splitString[3]
             );
-          }else {
+          } else {
             Alert.alert(
-              "Tid ikke gjyldig",
-              "Fyll inn tid riktig",
+              "Tid ikke gjyldig!",
+              "Fyll inn tid på riktig måte.",
               [{ text: "Ok", style: "cancel" }],
               { cancelable: true }
             );
