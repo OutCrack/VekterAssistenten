@@ -22,7 +22,7 @@ initSalaryProfileDB()
   .then(() => console.log("Initialized SalaryProfile database"))
   .catch((err) => {
     console.log("Initialized database failed");
-    consol.log(err);
+    console.log(err);
   });
 
 const rootReducer = combineReducers({

@@ -8,7 +8,7 @@ import {
   fetchShifts,
   insertShift,
   removeShift,
-  // updateShift,
+  editShift,
 } from "../../helper/shiftDataBase";
 
 export const loadShifts = (props) => {
@@ -64,7 +64,7 @@ export const createShift = (
           endTime,
           overtimePercentage,
           paidLunch,
-          note
+          note,
         },
       });
     } catch (err) {
@@ -80,10 +80,10 @@ export const findShift = (date, startTime, endTime) => {
     shiftData: {
       date,
       startTime,
-      endTime
-    }
-  }
-}
+      endTime,
+    },
+  };
+};
 
 export const deleteShift = (id) => {
   return async (dispatch) => {
@@ -112,20 +112,43 @@ export const updateShift = (
   paidLunch,
   note
 ) => {
-  return {
-    type: UPDATE_SHIFT,
-    sId: id,
-    shiftData: {
-      type,
-      title,
-      shiftId,
-      address,
-      date,
-      startTime,
-      endTime,
-      overtimePercentage,
-      paidLunch,
-      note
-    },
+  return async (dispatch) => {
+    try {
+      const dbResult = await editShift(
+        id,
+        type,
+        title,
+        shiftId,
+        address,
+        date,
+        startTime,
+        endTime,
+        overtimePercentage,
+        paidLunch,
+        note
+      );
+
+      console.log("------------------ Edit Shift ------------------");
+      console.log(dbResult);
+      dispatch({
+        type: UPDATE_SHIFT,
+        sId: id,
+        shiftData: {
+          type,
+          title,
+          shiftId,
+          address,
+          date,
+          startTime,
+          endTime,
+          overtimePercentage,
+          paidLunch,
+          note,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
   };
 };

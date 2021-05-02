@@ -10,14 +10,12 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { HeaderBackButton } from '@react-navigation/stack';
 
 import * as shiftsActions from "../../store/actions/shifts";
 import * as salaryProfileActions from "../../store/actions/salaryProfiles";
 
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
-// import { OVERTIME } from "../../data/dummy-overtime";
 
 import ListItem from "../../components/ShiftListItem";
 import Colors from "../../constants/Colors";
@@ -31,16 +29,11 @@ const AllShiftsScreen = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("AllShiftsScreen UseEffect 1");
     dispatch(shiftsActions.loadShifts("SELECT * FROM shifts"));
     dispatch(
       salaryProfileActions.loadSalaryProfiles("SELECT * FROM salaryProfiles")
     );
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   if(allSalaryProfiles > 0) setSalaryButton(true);
-  // }, [allSalaryProfiles])
 
   const [shiftsDay, setShiftsDay] = useState([]);
   const [markedDates, setMarkedDates] = useState();
@@ -52,38 +45,15 @@ const AllShiftsScreen = (props) => {
     allSalaryProfiles.length > 0 ? true : false
   );
 
-  // const loadShifts = useCallback(async () => {
-  //   setError(null);
-  //   setIsRefreshing(true);
-  //   try {
-  //     await dispatch(shiftsActions.fetchProducts());
-  //   } catch (err) {
-  //     setError(err.message);
-  //   }
-  //   setIsRefreshing(false);
-  // }, [dispatch, setIsLoading, setError]);
-
-  // useEffect(() => {
-  //   const unsubscribe = props.navigation.addListener('focus', loadProducts);
-
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, [loadProducts]);
-
   useEffect(() => {
-    console.log("AllShiftsScreen UseEffect 2");
-    console.log("Amount of Shifts: " + allShifts.length);
-    console.log("Amount of SalaryProfiles: " + salaryProfiles.length);
+    // console.log("Amount of Shifts: " + allShifts.length);
+    // console.log("Amount of SalaryProfiles: " + salaryProfiles.length);
     let dates = [];
     let overtime = [];
     let combined = {};
     allShifts.forEach((element) => {
       dates.push(element.date);
     });
-    // OVERTIME.forEach((element) => {
-    //   overtime.push(element.date);
-    // });
 
     const overtimeMark = {
       key: "overtime",
@@ -127,11 +97,6 @@ const AllShiftsScreen = (props) => {
         shifts.push(element);
       }
     });
-    // OVERTIME.forEach((element) => {
-    //   if (element.date === MyDateString) {
-    //     shifts.push(element);
-    //   }
-    // });
 
     if (shifts.length > 1) {
       for (let i = 0; i < shifts.length; i++) {
@@ -150,7 +115,6 @@ const AllShiftsScreen = (props) => {
   }, [allShifts]);
 
   const onDatePressHandler = (datePressed) => {
-    // console.log("onDatePressHandler: " + datePressed.dateString);
     let date = datePressed.dateString;
     let shifts = [];
     if (dateSelected !== date) {
@@ -159,11 +123,6 @@ const AllShiftsScreen = (props) => {
           shifts.push(element);
         }
       });
-      // OVERTIME.forEach((element) => {
-      //   if (element.date === date) {
-      //     shifts.push(element);
-      //   }
-      // });
 
       if (shifts.length > 1) {
         for (let i = 0; i < shifts.length; i++) {
@@ -197,11 +156,6 @@ const AllShiftsScreen = (props) => {
         shifts.push(element);
       }
     });
-    // OVERTIME.forEach((element) => {
-    //   if (element.date === date) {
-    //     shifts.push(element);
-    //   }
-    // });
 
     if (shifts.length > 1) {
       for (let i = 0; i < shifts.length; i++) {
@@ -236,13 +190,13 @@ const AllShiftsScreen = (props) => {
       <TouchableOpacity
         style={styles.headerBtn}
         onPress={() => {
-          console.log("Alle skifts: " + allShifts.length);
+          // console.log("Alle skifts: " + allShifts.length);
           if (allSalaryProfiles.length > 0) {
             props.navigation.navigate("Salary", {
               month: monthShowing,
             });
           } else {
-            console.log(allShifts);
+            // console.log(allShifts);
             Alert.alert(
               "Ingen lønnsprofil er opprettet.",
               "Ønsker du å opprette en lønnsprofil?",
@@ -300,13 +254,15 @@ const AllShiftsScreen = (props) => {
           />
         )}
         ListEmptyComponent={
-          <View style={styles.noShift}>
-            <Text style={styles.noShiftText}>Ingen vakt</Text>
+          <View style={styles.noItem}>
+            <Text style={styles.noItemText}>Ingen vakt</Text>
           </View>
         }
       />
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("AddShift")}
+        onPress={() => props.navigation.navigate("AddShift", {
+          allShifts: allShifts
+        })}
         style={styles.addShiftButton}
       >
         <Ionicons name={"md-add"} size={30} color="#052055" />
@@ -320,18 +276,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primaryLight,
   },
-  // headerBtnContainer: {
-  //   flexDirection: "row",
-  // },
   headerBtn: {
     marginRight: 10,
     marginLeft: 10,
   },
-  noShift: {
+  noItem: {
     alignItems: "center",
     marginTop: 40,
   },
-  noShiftText: {
+  noItemText: {
     fontSize: 30,
     fontWeight: "600",
     color: "#C0C0C0",

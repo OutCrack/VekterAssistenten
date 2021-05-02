@@ -54,7 +54,6 @@ export const insertShift = (
   paidLunch,
   note
 ) => {
-  console.log("yolo");
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -85,7 +84,7 @@ export const insertShift = (
   return promise;
 };
 
-export const updateShift = (
+export const editShift = (
   id,
   type,
   title,
@@ -101,7 +100,7 @@ export const updateShift = (
   const promise = new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `UPDATE shifts SET type = ?, title = ?, shiftId = ?, address = ?, date = ?, startTime = ?, endTime = ?, overtimePercentage = ?, paidLunch = ?, note = ?, WHERE id = ?;`,
+        `UPDATE shifts SET type = ?, title = ?, shiftId = ?, address = ?, date = ?, startTime = ?, endTime = ?, overtimePercentage = ?, paidLunch = ?, note = ? WHERE id = ?;`,
         [
           type,
           title,

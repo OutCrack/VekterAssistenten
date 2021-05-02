@@ -92,7 +92,7 @@ export const deleteSalaryProfile = (id) => {
       dispatch({
         type: DELETE_SALARYPROFILE,
         salaryProfileData: {
-          id: dbResult.insertId,
+          id: id,
         },
       });
     } catch (err) {

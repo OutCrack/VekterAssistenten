@@ -6,7 +6,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Colors from "../constants/Colors";
 
 import AllShiftsScreen from "../screens/AllShifts/AllShiftsScreen";
-import SalaryProfileScreen from "../screens/Profile/SalaryProfileScreen";
+import SalaryProfileScreen, {
+  screenOptions as salaryProfileScreenOptions,
+} from "../screens/Profile/SalaryProfileScreen";
 import ShiftDetailScreen from "../screens/AllShifts/ShiftDetailScreen";
 import AddShiftScreen from "../screens/AllShifts/AddShiftScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
@@ -79,11 +81,7 @@ const MainStackScreens = () => {
       <MainStack.Screen
         name="SalaryProfile"
         component={SalaryProfileScreen}
-        options={{
-          title: "Mine Lønsprofiler",
-          headerStyle: { backgroundColor: Colors.primaryDark },
-          headerTintColor: "#fff",
-        }}
+        options={salaryProfileScreenOptions}
       />
       <MainStack.Screen
         name="SalaryProfileDetail"

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,10 +14,14 @@ import Colors from "../../constants/Colors";
 
 import * as shiftActions from "../../store/actions/shifts";
 
-// import ShiftInput from "../../components/ShiftInput";
 import Separator from "../../components/Separator";
+import { isValidTime } from "../../utility/validation";
 
 const AddShiftScreen = (props) => {
+  const { allShifts } = props.route.params;
+
+  const [btnText, setBtnText] = useState("Lagre ny vakt");
+  const [id, setId] = useState();
   const [type, setType] = useState("normal");
   const [name, setName] = useState("");
   const [shiftID, setShiftID] = useState("");
@@ -33,22 +38,27 @@ const AddShiftScreen = (props) => {
   const [extra, setExtra] = useState(false);
 
   useEffect(() => {
-    if(props.route.params?.selectedShift){
+    if (props.route.params?.selectedShift) {
       const { selectedShift } = props.route.params;
+      setId(selectedShift.id);
       setName(selectedShift.title);
       setShiftID(selectedShift.shiftId.toString());
+      setAddress(selectedShift.address);
       setDates([...dates, selectedShift.date]);
       setStartTime(selectedShift.startTime);
       setEndTime(selectedShift.endTime);
-      setAddress(selectedShift.address);
+      setOvertime(selectedShift.overtimePercentage.toString());
+      setPaidLunch(selectedShift.paidLunch);
+      setNote(selectedShift.note);
+      setBtnText("Rediger vakt");
     }
-    if(props.route.params?.overtime){
+    if (props.route.params?.overtime) {
       setExtra(true);
       setType("overtime");
       setOvertime("100");
+      setBtnText("Legg til overtid");
     }
-  }, [props.route.params?.selectedShift])
-
+  }, [props.route.params?.selectedShift]);
 
   useEffect(() => {
     if (props.route.params?.dateSelected) {
@@ -64,15 +74,58 @@ const AddShiftScreen = (props) => {
   }, [props.route.params?.dateSelected, dates]);
 
   const submitHandler = () => {
-    console.log("AddShift: SubmitHandler()");
-    dates.forEach((date) => {
+    if (
+      name.length < 1 ||
+      dates.length < 1 ||
+      startTime.length < 1 ||
+      endTime.length < 1
+    ) {
+      Alert.alert(
+        "Ikke fylt ut riktig!",
+        "Fyll ut minimum title, dato, start tid og slutt tid",
+        [{ text: "Ok", style: "cancel" }],
+        { cancelable: true }
+      );
+      return;
+    }
+
+    if (btnText === "Lagre ny vakt") {
+      dates.forEach((date) => {
+        if (!findShift(date, startTime, endTime)) {
+          dispatch(
+            shiftActions.createShift(
+              type,
+              name,
+              shiftID,
+              address,
+              date,
+              startTime,
+              endTime,
+              overtime,
+              paidLunch,
+              note
+            )
+          );
+          props.navigation.goBack();
+        } else {
+          Alert.alert(
+            "Kan ikke opprette ny vakt.",
+            "En vakt er allerede registret på den dagen i det tidsrommet.",
+            [{ text: "Ok", style: "cancel" }],
+            { cancelable: true }
+          );
+        }
+      });
+    } else if (btnText === "Rediger vakt") {
+      // edit shift
       dispatch(
-        shiftActions.createShift(
+        shiftActions.updateShift(
+          id,
           type,
           name,
           shiftID,
           address,
-          date,
+          dates[0],
           startTime,
           endTime,
           overtime,
@@ -80,8 +133,122 @@ const AddShiftScreen = (props) => {
           note
         )
       );
+      props.navigation.navigate("ShiftCalendar");
+    } else {
+      // add overtime
+      dispatch(
+        shiftActions.createShift(
+          type,
+          name,
+          shiftID,
+          address,
+          dates[0],
+          startTime,
+          endTime,
+          overtime,
+          paidLunch,
+          note
+        )
+      );
+      props.navigation.goBack();
+    }
+  };
+
+  //Checks if there is a registered shift om the same date and time
+  const findShift = (date, startTime, endTime) => {
+    let isFound = false;
+    const startT = startTime.split(":");
+    const endT = endTime.split(":");
+
+    allShifts.forEach((shift) => {
+      const shiftST = shift.startTime.split(":");
+      const shiftET = shift.endTime.split(":");
+      if (shift.date === date) {
+        console.log("Date Found");
+        // console.log(startT[0] < endT[0], shiftST, shiftET);
+        if (startT[0] <= shiftST[0] && endT[0] == shiftST[0]) {
+          if (endT[1] > shiftST[1]) {
+            console.log("Time Found");
+            isFound = true;
+            return;
+          }
+        } else if (startT[0] < shiftST[0] && endT[0] > shiftST[0]) {
+          isFound = true;
+          return;
+        } else if(startT[0] > shiftST[0] && endT[0] < shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] == shiftET[0] && endT[0] > shiftET[0]) {
+          if (startT[1] < shiftET[1]) {
+            isFound = true;
+            return;
+          }
+        }
+      }
     });
-    props.navigation.goBack();
+    return isFound;
+  };
+
+  // Changes 4 digits to XX:XX format
+  const timeChangeHandler = (input, type) => {
+    switch (type) {
+      case "start":
+        if (startTime.length == 3 && input.length > startTime.length) {
+          const splitString = input.split("");
+          if (isValidTime(input)) {
+            setStartTime(
+              splitString[0] +
+                splitString[1] +
+                ":" +
+                splitString[2] +
+                splitString[3]
+            );
+          } else {
+            Alert.alert(
+              "Tid ikke gjyldig!",
+              "Fyll inn tid på riktig måte.",
+              [{ text: "Ok", style: "cancel" }],
+              { cancelable: true }
+            );
+            setStartTime("");
+          }
+          break;
+        }
+        setStartTime(input);
+        break;
+      case "end":
+        if (endTime.length == 3 && input.length > endTime.length) {
+          const splitString = input.split("");
+          if (isValidTime(input)) {
+            setEndTime(
+              splitString[0] +
+                splitString[1] +
+                ":" +
+                splitString[2] +
+                splitString[3]
+            );
+          } else {
+            Alert.alert(
+              "Tid ikke gjyldig!",
+              "Fyll inn tid på riktig måte.",
+              [{ text: "Ok", style: "cancel" }],
+              { cancelable: true }
+            );
+            setEndTime("");
+          }
+          break;
+        }
+        setEndTime(input);
+        break;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -92,7 +259,11 @@ const AddShiftScreen = (props) => {
           <View style={styles.pickerContainer}>
             <View style={[styles.picker, { marginBottom: 5 }]}>
               <View style={styles.iconContainer}>
-                <Ionicons name="ios-paper-plane" size={30} color={Colors.secondary} />
+                <Ionicons
+                  name="ios-paper-plane"
+                  size={30}
+                  color={Colors.secondary}
+                />
               </View>
               <TextInput
                 style={{ width: "100%", fontSize: 18, color: "#fff" }}
@@ -101,6 +272,7 @@ const AddShiftScreen = (props) => {
                 placeholderTextColor="#808080"
                 onChangeText={(text) => setName(text)}
                 value={name}
+                maxLength={25}
               />
             </View>
             <Separator />
@@ -119,6 +291,8 @@ const AddShiftScreen = (props) => {
                 placeholderTextColor="#808080"
                 onChangeText={(text) => setShiftID(text)}
                 value={shiftID}
+                keyboardType="number-pad"
+                maxLength={8}
               />
             </View>
           </View>
@@ -162,10 +336,12 @@ const AddShiftScreen = (props) => {
                 <TextInput
                   style={styles.pickerText}
                   placeholder="00:00"
-                  onChangeText={(text) => setStartTime(text)}
+                  onChangeText={(text) => timeChangeHandler(text, "start")}
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   value={startTime}
+                  maxLength={5}
+                  keyboardType="number-pad"
                 />
               </View>
               <View style={styles.timePicker}>
@@ -175,10 +351,12 @@ const AddShiftScreen = (props) => {
                 <TextInput
                   style={styles.pickerText}
                   placeholder="00:00"
-                  onChangeText={(text) => setEndTime(text)}
+                  onChangeText={(text) => timeChangeHandler(text, "end")}
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   value={endTime}
+                  maxLength={5}
+                  keyboardType="number-pad"
                 />
               </View>
             </View>
@@ -190,7 +368,11 @@ const AddShiftScreen = (props) => {
           <View style={styles.pickerContainer}>
             <View style={styles.picker}>
               <View style={styles.iconContainer}>
-                <Ionicons name="md-location" size={30} color={Colors.secondary} />
+                <Ionicons
+                  name="md-location"
+                  size={30}
+                  color={Colors.secondary}
+                />
               </View>
               <TextInput
                 style={{ width: "80%", fontSize: 18, color: "#fff" }}
@@ -233,13 +415,11 @@ const AddShiftScreen = (props) => {
                     style={[
                       styles.pickerText,
                       {
-                        fontWeight: "800",
-                        fontSize: 25,
                         color: Colors.secondary,
                       },
                     ]}
                   >
-                    %
+                    Overtid ( % )
                   </Text>
                 </View>
                 <TextInput
@@ -249,6 +429,8 @@ const AddShiftScreen = (props) => {
                   placeholderTextColor="#808080"
                   value={overtime}
                   onChangeText={(text) => setOvertime(text)}
+                  maxLength={3}
+                  keyboardType="number-pad"
                 />
               </View>
             </View>
@@ -299,7 +481,7 @@ const AddShiftScreen = (props) => {
           onPress={submitHandler}
           // disabled={true}
         >
-          <Text style={styles.btnText}>Add New Shift</Text>
+          <Text style={styles.btnText}>{btnText}</Text>
         </TouchableOpacity>
       </View>
     </View>

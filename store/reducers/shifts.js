@@ -57,7 +57,7 @@ export default (state = initialState, action) => {
         action.sId,
         action.shiftData.type,
         action.shiftData.title,
-        action.shiftData.shifId,
+        action.shiftData.shiftId,
         action.shiftData.address,
         action.shiftData.date,
         action.shiftData.startTime,
