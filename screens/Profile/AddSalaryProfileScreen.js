@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
-import ShiftInput from "../../components/ShiftInput";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import * as salaryProfileActions from "../../store/actions/salaryProfiles";
 import Colors from "../../constants/Colors";
@@ -17,7 +17,7 @@ import Separator from "../../components/Separator";
 
 const AddSalaryProfileScreen = (props) => {
   const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState("");
   const [hourly, setHourly] = useState("");
   const [nightExtra, setNightExtra] = useState("");
@@ -39,7 +39,7 @@ const AddSalaryProfileScreen = (props) => {
   const [showServiceExtension, setShowServiceExtension] = useState(false);
 
   const submitHandler = () => {
-    console.log(title);
+    // console.log(title);
     dispatch(
       salaryProfileActions.createSalaryProfile(
         title,
@@ -59,6 +59,12 @@ const AddSalaryProfileScreen = (props) => {
     props.navigation.goBack();
   };
 
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS === "ios");
+    setStartDate(currentDate);
+  };
+
   props.navigation.setOptions({
     headerRight: () => (
       <TouchableOpacity style={styles.headerRightBtn} onPress={submitHandler}>
@@ -71,13 +77,24 @@ const AddSalaryProfileScreen = (props) => {
     ),
   });
 
+  const showHandler = (type) => {
+    switch(type){
+      case "title":
+        setShowTitle(!showTitle);
+    }
+  };
+
+  const showTitleHandler = () => {
+    showHandler("title");
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView alwaysBounceVertical={true}>
         <View style={styles.testContainer}>
           <TouchableOpacity
             style={styles.headerContainer}
-            onPress={() => setShowTitle(!showTitle)}
+            onPress={showTitleHandler}
           >
             <Text
               style={[
@@ -155,6 +172,14 @@ const AddSalaryProfileScreen = (props) => {
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setStartDate(text)}
                 />
+                {/* <DateTimePicker
+                  testID="dateTimePicker"
+                  value={startDate}
+                  mode={"date"}
+                  is24Hour={true}
+                  display="default"
+                  onChange={onChange}
+                /> */}
               </View>
               <Separator />
               <View style={styles.picker}>

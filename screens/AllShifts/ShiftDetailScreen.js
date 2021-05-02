@@ -21,7 +21,7 @@ const ShiftDetailScreen = (props) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const deleteHandler = () => {
-    console.log("Delete  id: " + selectedShift.id)
+    // console.log("Delete  id: " + selectedShift.id)
     Alert.alert(
       "",
       "Ønsker du å slette denne vakten?",

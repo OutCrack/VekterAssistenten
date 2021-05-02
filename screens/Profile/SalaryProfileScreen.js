@@ -12,15 +12,11 @@ import Colors from "../../constants/Colors";
 
 import { Ionicons } from "@expo/vector-icons";
 
-// import { initSalaryProfileDB } from "./helper/salaryProfileDatabase";
-
 const SalaryProfileScreen = (props) => {
   const salaryProfiles = useSelector(
     (state) => state.salaryProfiles.salaryProfiles
   );
-
-  console.log(salaryProfiles);
-
+  // console.log(salaryProfiles);
   return (
     <View style={styles.container}>
       <FlatList
@@ -29,8 +25,6 @@ const SalaryProfileScreen = (props) => {
         renderItem={(info) => (
           <ShiftListItem
             title={info.item.title}
-            // shiftId={info.item.id}
-            //shiftDate={info.item.date}
             startTime={info.item.startDate}
             endTime={info.item.endDate}
             overtime={""}
@@ -41,6 +35,11 @@ const SalaryProfileScreen = (props) => {
             }
           />
         )}
+        ListEmptyComponent={
+          <View style={styles.noItem}>
+            <Text style={styles.noItemText}>Ingen lønnsprofiler registrert</Text>
+          </View>
+        }
       />
     </View>
   );
@@ -48,7 +47,7 @@ const SalaryProfileScreen = (props) => {
 
 export const screenOptions = (navData) => {
   return {
-    headerTitle: "Salary Profiles",
+    headerTitle: "Mine lønnsprofiler",
     headerRight: () => (
       <TouchableOpacity
         style={styles.headerRightBtn}
@@ -74,6 +73,15 @@ const styles = StyleSheet.create({
   headerRightBtn: {
     marginRight: 10,
     marginLeft: 5,
+  },
+  noItem: {
+    alignItems: "center",
+    marginTop: 40,
+  },
+  noItemText: {
+    fontSize: 30,
+    fontWeight: "600",
+    color: "#C0C0C0",
   },
 });
 
