@@ -19,7 +19,7 @@ import { Calendar } from "react-native-calendars";
 
 import ListItem from "../../components/ShiftListItem";
 import Colors from "../../constants/Colors";
-import salaryProfiles from "../../store/reducers/salaryProfiles";
+import PopUpMenu from "../../components/UI/PopUpMenu";
 
 const AllShiftsScreen = (props) => {
   const allShifts = useSelector((state) => state.shifts.shifts);
@@ -44,6 +44,7 @@ const AllShiftsScreen = (props) => {
   const [salaryButton, setSalaryButton] = useState(
     allSalaryProfiles.length > 0 ? true : false
   );
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     // console.log("Amount of Shifts: " + allShifts.length);
@@ -51,9 +52,15 @@ const AllShiftsScreen = (props) => {
     let dates = [];
     let overtime = [];
     let combined = {};
-    allShifts.forEach((element) => {
-      dates.push(element.date);
-    });
+    // allShifts.forEach((element) => {
+    //   if(element.type === "normal") {
+    //     dates.push(element.date);
+    //   } else if (element.type === "overtime") {
+    //     overtime.push(element.date);
+    //     console.log("overtime found")
+    //   }
+
+    // });
 
     const overtimeMark = {
       key: "overtime",
@@ -61,22 +68,39 @@ const AllShiftsScreen = (props) => {
       selectedDotColot: "red",
     };
 
-    for (let i = 0; i < dates.length; i++) {
-      for (let y = 0; y < overtime.length; y++) {
-        if (dates[i] === overtime[y]) {
-          combined[dates[i]] = {
-            selected: true,
-            dots: [overtimeMark],
-          };
-          y = overtime.length;
+    allShifts.forEach((item) => {
+      // console.log(item.type);
+      if(item.type === "overtime") {
+        combined[item.date] = {
+          selected: true,
+          dots: [overtimeMark]
+        }
+      } else {
+        combined[item.date] = {
+          selected: true
         }
       }
-      if (combined[dates[i]] == null) {
-        combined[dates[i]] = {
-          selected: true,
-        };
-      }
-    }
+    });
+
+    // 
+    // --- THIS IS DEPRICATED --- SEE LINE 71
+    //
+    // for (let i = 0; i < dates.length; i++) {
+    //   for (let y = 0; y < overtime.length; y++) {
+    //     if (dates[i] === overtime[y]) {
+    //       combined[dates[i]] = {
+    //         selected: true,
+    //         dots: [overtimeMark],
+    //       };
+    //       y = overtime.length;
+    //     }
+    //   }
+    //   if (combined[dates[i]] == null) {
+    //     combined[dates[i]] = {
+    //       selected: true,
+    //     };
+    //   }
+    // }
 
     setMarkedDates(combined);
 
@@ -173,6 +197,25 @@ const AllShiftsScreen = (props) => {
     setDateSelected(date);
   };
 
+  const deleteHandler = () => {
+    // console.log("Delete  id: " + selectedShift.id)
+    Alert.alert(
+      "",
+      "Ønsker du å slette denne vakten?",
+      [
+        { text: "Nei", style: "cancel" },
+        {
+          text: "Slett",
+          onPress: () => {
+            dispatch(shiftsActions.deleteShift(selectedShift.id));
+            props.navigation.navigate("ShiftCalendar");
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   props.navigation.setOptions({
     headerLeft: () => (
       <TouchableOpacity
@@ -185,7 +228,7 @@ const AllShiftsScreen = (props) => {
           color={"#fff"}
         />
       </TouchableOpacity>
-  ),
+    ),
     headerRight: () => (
       <TouchableOpacity
         style={styles.headerBtn}
@@ -227,7 +270,11 @@ const AllShiftsScreen = (props) => {
     <SafeAreaView style={styles.container}>
       <Calendar
         onDayPress={onDatePressHandler}
-        //onDayLongPress={(day) => props.navigation.navigate("AddShift", { dateSelected: day.dateString})}//{console.log('selected day', day)}}
+        onDayLongPress={(day) =>
+          props.navigation.navigate("AddShift", {
+            dateSelected: [day.dateString],
+          })
+        }
         firstDay={1}
         markedDates={markedDates}
         markingType={"multi-dot"}
@@ -251,6 +298,10 @@ const AllShiftsScreen = (props) => {
                 selectedShift: info.item,
               })
             }
+            onItemLongPressed={() => {
+              console.log("onItemLongPressed");
+              // setShowMenu(true);
+            }}
           />
         )}
         ListEmptyComponent={
@@ -259,10 +310,26 @@ const AllShiftsScreen = (props) => {
           </View>
         }
       />
+      {/* {showMenu ? (
+        <PopUpMenu
+          deletehandler={() => deleteHandler()}
+          editHandler={() =>
+            props.navigation.navigate("AddShift", {
+              selectedShift: selectedShift,
+            })
+          }
+          overtimeHandler={() =>
+            props.navigation.navigate("AddShift", {
+              selectedShift: selectedShift,
+              overtime: true,
+            })
+          }
+        />
+      ) : null} */}
       <TouchableOpacity
-        onPress={() => props.navigation.navigate("AddShift", {
-          allShifts: allShifts
-        })}
+        onPress={() =>
+          props.navigation.navigate("AddShift")
+        }
         style={styles.addShiftButton}
       >
         <Ionicons name={"md-add"} size={30} color="#052055" />

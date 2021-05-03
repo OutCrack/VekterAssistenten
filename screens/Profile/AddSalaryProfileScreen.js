@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -16,6 +16,7 @@ import Colors from "../../constants/Colors";
 import Separator from "../../components/Separator";
 
 const AddSalaryProfileScreen = (props) => {
+  const allSP = useSelector((state) => state.salaryProfiles.salaryProfiles)
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState("");
@@ -39,7 +40,6 @@ const AddSalaryProfileScreen = (props) => {
   const [showServiceExtension, setShowServiceExtension] = useState(false);
 
   const submitHandler = () => {
-    // console.log(title);
     dispatch(
       salaryProfileActions.createSalaryProfile(
         title,
@@ -77,24 +77,13 @@ const AddSalaryProfileScreen = (props) => {
     ),
   });
 
-  const showHandler = (type) => {
-    switch(type){
-      case "title":
-        setShowTitle(!showTitle);
-    }
-  };
-
-  const showTitleHandler = () => {
-    showHandler("title");
-  }
-
   return (
     <View style={styles.container}>
       <ScrollView alwaysBounceVertical={true}>
         <View style={styles.testContainer}>
           <TouchableOpacity
             style={styles.headerContainer}
-            onPress={showTitleHandler}
+            onPress={() => setShowTitle(!showTitle)}
           >
             <Text
               style={[
@@ -110,7 +99,7 @@ const AddSalaryProfileScreen = (props) => {
               color={title ? Colors.secondary : Colors.primaryText}
             />
           </TouchableOpacity>
-          {showTitle ? (
+          {showTitle && (
             <View style={styles.pickerContainer}>
               <View style={styles.picker}>
                 <View style={styles.iconContainer}>
@@ -129,7 +118,7 @@ const AddSalaryProfileScreen = (props) => {
                 />
               </View>
             </View>
-          ) : null}
+          )}
         </View>
         <View style={styles.testContainer}>
           <TouchableOpacity
@@ -152,7 +141,7 @@ const AddSalaryProfileScreen = (props) => {
               }
             />
           </TouchableOpacity>
-          {showDates ? (
+          {showDates && (
             <View style={styles.pickerContainer}>
               <View style={styles.picker}>
                 <View style={styles.iconContainer}>
@@ -172,14 +161,6 @@ const AddSalaryProfileScreen = (props) => {
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setStartDate(text)}
                 />
-                {/* <DateTimePicker
-                  testID="dateTimePicker"
-                  value={startDate}
-                  mode={"date"}
-                  is24Hour={true}
-                  display="default"
-                  onChange={onChange}
-                /> */}
               </View>
               <Separator />
               <View style={styles.picker}>
@@ -202,7 +183,7 @@ const AddSalaryProfileScreen = (props) => {
                 />
               </View>
             </View>
-          ) : null}
+          )}
         </View>
 
         <View style={styles.testContainer}>

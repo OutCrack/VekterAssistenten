@@ -5,7 +5,7 @@ import Icon from "@expo/vector-icons/Ionicons";
 import Colors from "../constants/Colors";
 
 const shiftListItem = (props) => (
-  <TouchableOpacity style={styles.container} onPress={props.onItemPressed}>
+  <TouchableOpacity style={styles.container} onPress={props.onItemPressed} onLongPress={props.onItemLongPressed}>
     <View style={styles.shiftIcon}>
       <Icon size={40} name="md-calendar" color={Colors.primaryText} />
     </View>

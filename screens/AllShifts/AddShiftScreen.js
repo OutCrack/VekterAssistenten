@@ -18,7 +18,8 @@ import Separator from "../../components/Separator";
 import { isValidTime } from "../../utility/validation";
 
 const AddShiftScreen = (props) => {
-  const { allShifts } = props.route.params;
+  const allShifts = useSelector((state) => state.shifts.shifts);
+  // const { allShifts } = props.route.params;
 
   const [btnText, setBtnText] = useState("Lagre ny vakt");
   const [id, setId] = useState();
@@ -44,7 +45,7 @@ const AddShiftScreen = (props) => {
       setName(selectedShift.title);
       setShiftID(selectedShift.shiftId.toString());
       setAddress(selectedShift.address);
-      setDates([...dates, selectedShift.date]);
+      setDates([selectedShift.date]);
       setStartTime(selectedShift.startTime);
       setEndTime(selectedShift.endTime);
       setOvertime(selectedShift.overtimePercentage.toString());
@@ -136,21 +137,31 @@ const AddShiftScreen = (props) => {
       props.navigation.navigate("ShiftCalendar");
     } else {
       // add overtime
-      dispatch(
-        shiftActions.createShift(
-          type,
-          name,
-          shiftID,
-          address,
-          dates[0],
-          startTime,
-          endTime,
-          overtime,
-          paidLunch,
-          note
-        )
-      );
-      props.navigation.goBack();
+      // console.log("Overtime added")
+      if (!findShift(dates[0], startTime, endTime)) {
+        dispatch(
+          shiftActions.createShift(
+            type,
+            name,
+            shiftID,
+            address,
+            dates[0],
+            startTime,
+            endTime,
+            overtime,
+            paidLunch,
+            note
+          )
+        );
+        props.navigation.navigate("ShiftCalendar");
+      } else {
+        Alert.alert(
+          "Kan ikke opprette ny vakt.",
+          "En vakt er allerede registret på den dagen i det tidsrommet.",
+          [{ text: "Ok", style: "cancel" }],
+          { cancelable: true }
+        );
+      }
     }
   };
 
@@ -164,18 +175,22 @@ const AddShiftScreen = (props) => {
       const shiftST = shift.startTime.split(":");
       const shiftET = shift.endTime.split(":");
       if (shift.date === date) {
-        console.log("Date Found");
-        // console.log(startT[0] < endT[0], shiftST, shiftET);
+        // console.log("Date Found");
         if (startT[0] <= shiftST[0] && endT[0] == shiftST[0]) {
           if (endT[1] > shiftST[1]) {
-            console.log("Time Found");
             isFound = true;
             return;
           }
-        } else if (startT[0] < shiftST[0] && endT[0] > shiftST[0]) {
+        } else if (startT[0] <= shiftST[0] && endT[0] > shiftST[0]) {
           isFound = true;
           return;
-        } else if(startT[0] > shiftST[0] && endT[0] < shiftET[0]) {
+        } else if (startT[0] > shiftST[0] && endT[0] < shiftET[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] == shiftST[0] && endT[0] > shiftST[0]) {
+          isFound = true;
+          return;
+        } else if (startT[0] == shiftST[0] && endT[0] < shiftST[0]) {
           isFound = true;
           return;
         } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {

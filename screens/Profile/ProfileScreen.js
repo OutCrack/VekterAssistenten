@@ -62,7 +62,7 @@ const ProfileScreen = (props) => {
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('onItemPressed("settings")')}>
+      <TouchableOpacity onPress={() => props.navigation.navigate("Settings")}>
         <View style={styles.rowContainer}>
           <View style={styles.btnIconContainer}>
             <Icon size={30} name={"settings"} color={Colors.primaryText} />

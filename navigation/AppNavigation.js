@@ -16,6 +16,7 @@ import SalaryProfileDetailScreen from "../screens/Profile/SalaryProfileDetailScr
 import SelectDateScreen from "../screens/AllShifts/SelectDateScreen";
 import AddSalaryProfileScreen from "../screens/Profile/AddSalaryProfileScreen";
 import SalaryScreen from "../screens/AllShifts/SalaryScreen";
+import SettingsScreen from "../screens/Profile/SettingsScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -106,6 +107,15 @@ const MainStackScreens = () => {
         component={SalaryScreen}
         options={{
           title: "Lønnskalkulering",
+          headerStyle: { backgroundColor: Colors.primaryDark },
+          headerTintColor: "#fff",
+        }}
+      />
+      <MainStack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          title: "Dine instillinger",
           headerStyle: { backgroundColor: Colors.primaryDark },
           headerTintColor: "#fff",
         }}
