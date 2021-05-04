@@ -15,7 +15,8 @@ import Colors from "../../constants/Colors";
 import * as shiftActions from "../../store/actions/shifts";
 
 import Separator from "../../components/Separator";
-import { isValidTime } from "../../utility/validation";
+import { isValidTime } from "../../utility/inputValidation";
+import { findShift } from "../../utility/databaseValidation";
 
 const AddShiftScreen = (props) => {
   const allShifts = useSelector((state) => state.shifts.shifts);
@@ -92,7 +93,7 @@ const AddShiftScreen = (props) => {
 
     if (btnText === "Lagre ny vakt") {
       dates.forEach((date) => {
-        if (!findShift(date, startTime, endTime)) {
+        if (!findShift(allShifts, date, startTime, endTime)) {
           dispatch(
             shiftActions.createShift(
               type,
@@ -137,8 +138,7 @@ const AddShiftScreen = (props) => {
       props.navigation.navigate("ShiftCalendar");
     } else {
       // add overtime
-      // console.log("Overtime added")
-      if (!findShift(dates[0], startTime, endTime)) {
+      if (!findShift(allShifts, dates[0], startTime, endTime)) {
         dispatch(
           shiftActions.createShift(
             type,
@@ -163,51 +163,6 @@ const AddShiftScreen = (props) => {
         );
       }
     }
-  };
-
-  //Checks if there is a registered shift om the same date and time
-  const findShift = (date, startTime, endTime) => {
-    let isFound = false;
-    const startT = startTime.split(":");
-    const endT = endTime.split(":");
-
-    allShifts.forEach((shift) => {
-      const shiftST = shift.startTime.split(":");
-      const shiftET = shift.endTime.split(":");
-      if (shift.date === date) {
-        // console.log("Date Found");
-        if (startT[0] <= shiftST[0] && endT[0] == shiftST[0]) {
-          if (endT[1] > shiftST[1]) {
-            isFound = true;
-            return;
-          }
-        } else if (startT[0] <= shiftST[0] && endT[0] > shiftST[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] > shiftST[0] && endT[0] < shiftET[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] == shiftST[0] && endT[0] > shiftST[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] == shiftST[0] && endT[0] < shiftST[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] < shiftET[0] && endT[0] > shiftET[0]) {
-          isFound = true;
-          return;
-        } else if (startT[0] == shiftET[0] && endT[0] > shiftET[0]) {
-          if (startT[1] < shiftET[1]) {
-            isFound = true;
-            return;
-          }
-        }
-      }
-    });
-    return isFound;
   };
 
   // Changes 4 digits to XX:XX format

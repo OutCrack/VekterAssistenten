@@ -49,8 +49,8 @@ const AllShiftsScreen = (props) => {
   useEffect(() => {
     // console.log("Amount of Shifts: " + allShifts.length);
     // console.log("Amount of SalaryProfiles: " + salaryProfiles.length);
-    let dates = [];
-    let overtime = [];
+    // let dates = [];
+    // let overtime = [];
     let combined = {};
     // allShifts.forEach((element) => {
     //   if(element.type === "normal") {
@@ -139,7 +139,7 @@ const AllShiftsScreen = (props) => {
   }, [allShifts]);
 
   const onDatePressHandler = (datePressed) => {
-    let date = datePressed.dateString;
+    let date = datePressed.dateString; // YYYY-MM-DD
     let shifts = [];
     if (dateSelected !== date) {
       allShifts.forEach((element) => {

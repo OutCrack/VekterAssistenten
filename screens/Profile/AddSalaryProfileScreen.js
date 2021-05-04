@@ -5,22 +5,26 @@ import {
   View,
   ScrollView,
   TextInput,
+  Platform,
   TouchableOpacity,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
 
 import * as salaryProfileActions from "../../store/actions/salaryProfiles";
+
 import Colors from "../../constants/Colors";
 import Separator from "../../components/Separator";
+import { validSalaryProfileInput } from "../../utility/inputValidation";
+import { findSalaryProfile } from "../../utility/databaseValidation";
 
 const AddSalaryProfileScreen = (props) => {
-  const allSP = useSelector((state) => state.salaryProfiles.salaryProfiles)
+  const allSP = useSelector((state) => state.salaryProfiles.salaryProfiles);
   const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [hourly, setHourly] = useState("");
+  const [certificate, setCertificate] = useState("");
   const [nightExtra, setNightExtra] = useState("");
   const [weekendExtra, setWeekendExtra] = useState("");
   const [holidayExtra, setHolidayExtra] = useState("");
@@ -28,7 +32,6 @@ const AddSalaryProfileScreen = (props) => {
   const [foodMoney, setFoodMoney] = useState("");
   const [functionSupplement, setFunctionSupplement] = useState("");
   const [serviceExtension, setServiceExtension] = useState("");
-  const [certificate, setCertificate] = useState("");
   const dispatch = useDispatch();
 
   const [showTitle, setShowTitle] = useState(true);
@@ -40,29 +43,56 @@ const AddSalaryProfileScreen = (props) => {
   const [showServiceExtension, setShowServiceExtension] = useState(false);
 
   const submitHandler = () => {
-    dispatch(
-      salaryProfileActions.createSalaryProfile(
-        title,
+    if (
+      validSalaryProfileInput(
         startDate,
         endDate,
         hourly,
+        certificate,
         nightExtra,
         weekendExtra,
         holidayExtra,
         monthlyHours,
         foodMoney,
         functionSupplement,
-        serviceExtension,
-        certificate
+        serviceExtension
       )
-    );
-    props.navigation.goBack();
-  };
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
-    setStartDate(currentDate);
+    ) {
+      let newStartDateFormat =
+        startDate.split(".")[2] +
+        "-" +
+        startDate.split(".")[1] +
+        "-" +
+        startDate.split(".")[0];
+      let newEndDateFormat =
+        endDate.split(".")[2] +
+        "-" +
+        endDate.split(".")[1] +
+        "-" +
+        endDate.split(".")[0];
+      if (!findSalaryProfile(allSP, newStartDateFormat, newEndDateFormat)) {
+        // dispatch(
+        //   salaryProfileActions.createSalaryProfile(
+        //     title,
+        //     newStartDateFormat,
+        //     newEndDateFormat,
+        //     hourly,
+        //     nightExtra,
+        //     weekendExtra,
+        //     holidayExtra,
+        //     monthlyHours,
+        //     foodMoney,
+        //     functionSupplement,
+        //     serviceExtension,
+        //     certificate
+        //   )
+        // );
+        // props.navigation.goBack();
+        console.log("no salary profile found");
+      } else {
+        console.log("salary profile found");
+      }
+    }
   };
 
   props.navigation.setOptions({
@@ -115,6 +145,7 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setTitle(text)}
+                  maxLength={25}
                 />
               </View>
             </View>
@@ -160,6 +191,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setStartDate(text)}
+                  maxLength={10}
+                  keyboardType="numeric"
                 />
               </View>
               <Separator />
@@ -180,6 +213,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setEndDate(text)}
+                  maxLength={10}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -221,6 +256,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setHourly(text)}
+                  maxLength={6}
+                  keyboardType="numeric"
                 />
               </View>
               <Separator />
@@ -234,6 +271,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setCertificate(text)}
+                  maxLength={5}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -277,6 +316,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setNightExtra(text)}
+                  maxLength={5}
+                  keyboardType="numeric"
                 />
               </View>
               <Separator />
@@ -290,6 +331,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setWeekendExtra(text)}
+                  maxLength={5}
+                  keyboardType="numeric"
                 />
               </View>
               <Separator />
@@ -303,6 +346,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setHolidayExtra(text)}
+                  maxLength={5}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -344,6 +389,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setMonthlyHours(text)}
+                  maxLength={6}
+                  keyboardType="numeric"
                 />
               </View>
               <Separator />
@@ -357,6 +404,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setFoodMoney(text)}
+                  maxLength={6}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -392,6 +441,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setFunctionSupplement(text)}
+                  maxLength={6}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
@@ -426,6 +477,8 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setServiceExtension(text)}
+                  maxLength={6}
+                  keyboardType="numeric"
                 />
               </View>
             </View>
