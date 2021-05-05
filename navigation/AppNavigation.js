@@ -17,6 +17,7 @@ import SelectDateScreen from "../screens/AllShifts/SelectDateScreen";
 import AddSalaryProfileScreen from "../screens/Profile/AddSalaryProfileScreen";
 import SalaryScreen from "../screens/AllShifts/SalaryScreen";
 import SettingsScreen from "../screens/Profile/SettingsScreen";
+import AuthScreen from "../screens/Profile/AuthScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -116,6 +117,15 @@ const MainStackScreens = () => {
         component={SettingsScreen}
         options={{
           title: "Dine instillinger",
+          headerStyle: { backgroundColor: Colors.primaryDark },
+          headerTintColor: "#fff",
+        }}
+      />
+      <MainStack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{
+          title: "Logg inn",
           headerStyle: { backgroundColor: Colors.primaryDark },
           headerTintColor: "#fff",
         }}

@@ -9,6 +9,8 @@ import {
 import Icon from "@expo/vector-icons/Ionicons";
 import Colors from "../../constants/Colors";
 
+import ProfileButton from "../../components/UI/ProfileButton";
+
 const ProfileScreen = (props) => {
   const onItemPressed = (key) => {
     props.navigation.navigate(key);
@@ -18,7 +20,11 @@ const ProfileScreen = (props) => {
     <View style={styles.container}>
       <View style={styles.profileInfoContainer}>
         <View style={styles.iconContainer}>
-          <Icon size={100} name={"person-circle-outline"} color={Colors.primaryText} />
+          <Icon
+            size={100}
+            name={"person-circle-outline"}
+            color={Colors.primaryText}
+          />
         </View>
         <View style={styles.profileInfo}>
           <Text style={styles.rowText}>Profile information</Text>
@@ -28,87 +34,31 @@ const ProfileScreen = (props) => {
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => onItemPressed("SalaryProfile")}>
-        <View style={styles.rowContainer}>
-          <View style={styles.btnIconContainer}>
-            <Icon size={30} name={"archive"} color={Colors.primaryText} />
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.rowText}>Dine Lønnsprofiler</Text>
-          </View>
-          <View style={styles.arrowIcon}>
-            <Icon
-              size={30}
-              name={"md-arrow-forward"}
-              color={Colors.secondary}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('onItemPressed("settings")')}>
-        <View style={styles.rowContainer}>
-          <View style={styles.btnIconContainer}>
-            <Icon size={30} name={"mail"} color={Colors.primaryText} />
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.rowText}>Innboks</Text>
-          </View>
-          <View style={styles.arrowIcon}>
-            <Icon
-              size={30}
-              name={"md-arrow-forward"}
-              color={Colors.secondary}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => props.navigation.navigate("Settings")}>
-        <View style={styles.rowContainer}>
-          <View style={styles.btnIconContainer}>
-            <Icon size={30} name={"settings"} color={Colors.primaryText} />
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.rowText}>Innstillinger</Text>
-          </View>
-          <View style={styles.arrowIcon}>
-            <Icon
-              size={30}
-              name={"md-arrow-forward"}
-              color={Colors.secondary}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('onItemPressed("help")')}>
-        <View style={styles.rowContainer}>
-          <View style={styles.btnIconContainer}>
-            <Icon size={30} name={"md-help"} color={Colors.primaryText} />
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.rowText}>Hjelp & FAQ</Text>
-          </View>
-          <View style={styles.arrowIcon}>
-            <Icon
-              size={30}
-              name={"md-arrow-forward"}
-              color={Colors.secondary}
-            />
-          </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => console.log('onItemPressed("logOut")')}>
-        <View style={styles.rowContainer}>
-          <View style={styles.btnIconContainer}>
-            <Icon size={30} name={"md-log-out"} color="black" />
-          </View>
-          <View style={styles.textContainer}>
-            <Text style={styles.rowTextLogOut}>Log out</Text>
-          </View>
-          <View style={styles.arrowIcon}>
-            <Icon size={30} name={"md-arrow-forward"} color="black" />
-          </View>
-        </View>
-      </TouchableOpacity>
+      <ProfileButton
+        onItemPressed={() => onItemPressed("SalaryProfile")}
+        icon="archive"
+        rowText="Dine Lønnsprofiler"
+      />
+      <ProfileButton
+        onItemPressed={() => console.log('onItemPressed("innboks")')}
+        icon="mail"
+        rowText="Innboks"
+      />
+      <ProfileButton
+        onItemPressed={() => props.navigation.navigate("Settings")}
+        icon="settings"
+        rowText="Innstillinger"
+      />
+      <ProfileButton
+        onItemPressed={() => console.log('onItemPressed("help")')}
+        icon="md-help"
+        rowText="Hjelp & FAQ"
+      />
+      <ProfileButton
+        onItemPressed={() => props.navigation.navigate("Auth")}
+        icon="md-log-out"
+        rowText="Logg inn"
+      />
     </View>
   );
 };
@@ -121,13 +71,13 @@ const styles = StyleSheet.create({
   profileInfoContainer: {
     alignItems: "center",
     paddingTop: 10,
-    marginBottom: 100
+    marginBottom: 100,
   },
   profileInfo: {
     // borderColor: "black",
     // borderWidth: 1,
     alignItems: "center",
-    width: "80%"
+    width: "80%",
   },
   rowContainer: {
     flexDirection: "row",
@@ -155,7 +105,7 @@ const styles = StyleSheet.create({
   rowTextLogOut: {
     fontWeight: "500",
     fontSize: 16,
-    color: "black",
+    color: Colors.primaryText,
   },
   arrowIcon: {
     flex: 1,

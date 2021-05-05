@@ -1,11 +1,13 @@
 import React from "react";
 import { TextInput, StyleSheet } from "react-native";
 
+import Colors from "../../constants/Colors";
+
 const authInput = props => (
   <TextInput 
     underlineColorAndroid="transparent"
     textAlign={'center'}
-    placeholderTextColor="gray"
+    placeholderTextColor={Colors.secondaryTextLight}
     {...props}
     style={[styles.input, props.style, !props.valid && props.touched ? styles.invalid : null]}
   />
@@ -16,13 +18,13 @@ const styles = StyleSheet.create({
     width: "80%",
     height: 40,
     fontSize: 16,
-    color: "#59566B",
-    backgroundColor: "#E3F1FF",
+    color: Colors.secondaryText,
+    backgroundColor: Colors.primarySuperLight,
     borderRadius: 25,
     marginTop: 10,
   },
   invalid: {
-    backgroundColor: '#f9c0c0'
+    backgroundColor: Colors.invalid
   }
 })
 

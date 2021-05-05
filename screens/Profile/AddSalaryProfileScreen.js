@@ -7,6 +7,7 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
@@ -71,26 +72,34 @@ const AddSalaryProfileScreen = (props) => {
         "-" +
         endDate.split(".")[0];
       if (!findSalaryProfile(allSP, newStartDateFormat, newEndDateFormat)) {
-        // dispatch(
-        //   salaryProfileActions.createSalaryProfile(
-        //     title,
-        //     newStartDateFormat,
-        //     newEndDateFormat,
-        //     hourly,
-        //     nightExtra,
-        //     weekendExtra,
-        //     holidayExtra,
-        //     monthlyHours,
-        //     foodMoney,
-        //     functionSupplement,
-        //     serviceExtension,
-        //     certificate
-        //   )
-        // );
-        // props.navigation.goBack();
+        dispatch(
+          salaryProfileActions.createSalaryProfile(
+            title,
+            newStartDateFormat,
+            newEndDateFormat,
+            hourly,
+            nightExtra,
+            weekendExtra,
+            holidayExtra,
+            monthlyHours,
+            foodMoney,
+            functionSupplement,
+            serviceExtension,
+            certificate
+          )
+        );
+        props.navigation.goBack();
         console.log("no salary profile found");
       } else {
         console.log("salary profile found");
+        Alert.alert(
+          "Annen lønnsprofil funnet i gitt tidsrom!",
+          "Du kan ikke ha to lønnsprofiler som overlapper hverandre.",
+          [{ text: "Ok", style: "cancel" }],
+          {
+            cancelable: true,
+          }
+        );
       }
     }
   };
