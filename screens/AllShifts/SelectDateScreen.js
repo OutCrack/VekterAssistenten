@@ -40,19 +40,22 @@ const SelectDateScreen = (props) => {
     }
   };
 
-  props.navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity
+  useEffect(()=> {
+
+    props.navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
         style={styles.headerButton}
         onPress={() =>
           props.navigation.navigate("AddShift", { dateSelected: selectedDates })
         }
-      >
+        >
         <Ionicons name="md-checkmark" size={30} color={Colors.primaryText} />
       </TouchableOpacity>
     ),
   });
-
+})
+  
   return (
     <View style={styles.container}>
       <Calendar

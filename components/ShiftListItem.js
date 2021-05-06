@@ -7,7 +7,8 @@ import Colors from "../constants/Colors";
 const shiftListItem = (props) => (
   <TouchableOpacity style={styles.container} onPress={props.onItemPressed} onLongPress={props.onItemLongPressed}>
     <View style={styles.shiftIcon}>
-      <Icon size={40} name="md-calendar" color={Colors.primaryText} />
+      {/* <Icon size={40} name="md-calendar" color={Colors.primaryText} /> */}
+      <Text style={styles.dateText}>{props.dayOfMonth}</Text>
     </View>
     <View style={styles.textRow}>
       <View style={styles.shiftNameColumn}>
@@ -43,10 +44,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  dateText: {
+    color: Colors.primaryText,
+    fontSize: 35,
+    fontWeight: "500"
+  },
   textRow: {
     flex: 7,
-    marginVertical: 5,
-    paddingVertical: 10,
+    marginVertical: 15,
     flexDirection: "column",
     justifyContent: "flex-start",
   },
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     //marginLeft: 5
   },
   shiftDetailIcon: {
-    flex: 1,
+    flex: 2,
     justifyContent: "center",
     alignItems: "center",
   },

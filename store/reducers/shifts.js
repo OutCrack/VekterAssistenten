@@ -1,9 +1,10 @@
 // import { SHIFTS } from "../../data/dummy-shifts";
-import { CREATE_SHIFT, SET_SHIFTS, DELETE_SHIFT, UPDATE_SHIFT, FIND_SHIFTS } from "../actions/shifts";
+import { CREATE_SHIFT, SET_SHIFTS, DELETE_SHIFT, UPDATE_SHIFT, FIND_SHIFT, TOGGLE_FAVORITE } from "../actions/shifts";
 import Shift from "../../models/shift";
 
 const initialState = {
   shifts: [],
+  favoriteshift: []
 };
 
 export default (state = initialState, action) => {
@@ -76,7 +77,7 @@ export default (state = initialState, action) => {
         ...state,
         shifts: updatedShifts,
       };
-    case FIND_SHIFTS:
+    case FIND_SHIFT:
       const shiftsFound = [];
       state.shifts.forEach(shift => {
         if(action.shiftData.date === shift.date) {
@@ -89,6 +90,9 @@ export default (state = initialState, action) => {
       } else {
         return false;
       }
+    case TOGGLE_FAVORITE:
+      
+    default:
+      return state;
   }
-  return state;
 };

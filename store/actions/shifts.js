@@ -2,7 +2,8 @@ export const CREATE_SHIFT = "CREATE_SHIFT";
 export const SET_SHIFTS = "SET_SHIFTS";
 export const DELETE_SHIFT = "DELETE_SHIFT";
 export const UPDATE_SHIFT = "UPDATE_SHIFT";
-export const FIND_SHIFTS = "FIND_SHIFTS";
+export const FIND_SHIFT = "FIND_SHIFT";
+export const TOGGLE_FAVORITE = "TOGGLE_FAVORITE";
 
 import {
   fetchShifts,
@@ -76,7 +77,7 @@ export const createShift = (
 
 export const findShift = (date, startTime, endTime) => {
   return {
-    type: FIND_SHIFTS,
+    type: FIND_SHIFT,
     shiftData: {
       date,
       startTime,
@@ -151,4 +152,8 @@ export const updateShift = (
       throw err;
     }
   };
+};
+
+export const toggleFavorite = (id) => {
+  return { type: TOGGLE_FAVORITE, shiftKey: id};
 };

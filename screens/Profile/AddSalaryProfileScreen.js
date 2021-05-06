@@ -7,7 +7,7 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Ionicons } from "@expo/vector-icons";
@@ -103,17 +103,18 @@ const AddSalaryProfileScreen = (props) => {
       }
     }
   };
-
-  props.navigation.setOptions({
-    headerRight: () => (
-      <TouchableOpacity style={styles.headerRightBtn} onPress={submitHandler}>
-        <Ionicons
-          name={Platform.OS === "android" ? "md-checkmark" : "ios-checkmark"}
-          size={35}
-          color={"#fff"}
-        />
-      </TouchableOpacity>
-    ),
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={styles.headerRightBtn} onPress={submitHandler}>
+          <Ionicons
+            name={Platform.OS === "android" ? "md-checkmark" : "ios-checkmark"}
+            size={35}
+            color={"#fff"}
+          />
+        </TouchableOpacity>
+      ),
+    });
   });
 
   return (

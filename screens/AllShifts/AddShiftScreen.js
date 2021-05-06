@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TextInput,
   Alert,
+  Button,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
@@ -19,6 +20,7 @@ import { isValidTime } from "../../utility/inputValidation";
 import { findShift } from "../../utility/databaseValidation";
 
 const AddShiftScreen = (props) => {
+  const dispatch = useDispatch();
   const allShifts = useSelector((state) => state.shifts.shifts);
   // const { allShifts } = props.route.params;
 
@@ -35,7 +37,7 @@ const AddShiftScreen = (props) => {
   const [overtime, setOvertime] = useState("0");
   const [paidLunch, setPaidLunch] = useState(true);
   const [note, setNote] = useState("");
-  const dispatch = useDispatch();
+  const [favorite, setFavorite] = useState(false);
 
   const [extra, setExtra] = useState(false);
 
@@ -75,7 +77,7 @@ const AddShiftScreen = (props) => {
     }
   }, [props.route.params?.dateSelected, dates]);
 
-  const submitHandler = () => {
+  const submitHandler = useCallback(() => {
     if (
       name.length < 1 ||
       dates.length < 1 ||
@@ -108,7 +110,7 @@ const AddShiftScreen = (props) => {
               note
             )
           );
-          props.navigation.goBack();
+          props.navigation.navigate("ShiftCalendar");
         } else {
           Alert.alert(
             "Kan ikke opprette ny vakt.",
@@ -163,7 +165,19 @@ const AddShiftScreen = (props) => {
         );
       }
     }
-  };
+  }, [
+    dispatch,
+    type,
+    name,
+    shiftID,
+    address,
+    dates,
+    startTime,
+    endTime,
+    overtime,
+    paidLunch,
+    note,
+  ]);
 
   // Changes 4 digits to XX:XX format
   const timeChangeHandler = (input, type) => {
@@ -220,6 +234,23 @@ const AddShiftScreen = (props) => {
         return null;
     }
   };
+
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={styles.headerBtn}
+          onPress={() => setFavorite(!favorite)}
+        >
+          <Ionicons
+            name={favorite ? "heart" : "heart-outline"}
+            size={35}
+            color={"#fff"}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  });
 
   return (
     <View style={styles.container}>
@@ -377,78 +408,78 @@ const AddShiftScreen = (props) => {
               color={overtime ? Colors.secondary : Colors.primaryText}
             />
           </TouchableOpacity>
-          {extra ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text
-                    style={[
-                      styles.pickerText,
-                      {
-                        color: Colors.secondary,
-                      },
-                    ]}
-                  >
-                    Overtid ( % )
-                  </Text>
+          {extra && (
+            <View>
+              <View style={styles.pickerContainer}>
+                <View style={styles.picker}>
+                  <View style={styles.iconContainer}>
+                    <Text
+                      style={[
+                        styles.pickerText,
+                        {
+                          color: Colors.secondary,
+                        },
+                      ]}
+                    >
+                      Overtid ( % )
+                    </Text>
+                  </View>
+                  <TextInput
+                    style={{ width: "100%", fontSize: 18, color: "#fff" }}
+                    placeholder="Overtidsprosent"
+                    underlineColorAndroid="transparent"
+                    placeholderTextColor="#808080"
+                    value={overtime}
+                    onChangeText={(text) => setOvertime(text)}
+                    maxLength={3}
+                    keyboardType="number-pad"
+                  />
                 </View>
-                <TextInput
-                  style={{ width: "100%", fontSize: 18, color: "#fff" }}
-                  placeholder="Overtidsprosent"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  value={overtime}
-                  onChangeText={(text) => setOvertime(text)}
-                  maxLength={3}
-                  keyboardType="number-pad"
+              </View>
+
+              <TouchableOpacity
+                style={[
+                  styles.pickerContainer,
+                  {
+                    marginTop: 15,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  },
+                ]}
+                onPress={() => setPaidLunch(!paidLunch)}
+              >
+                <View style={styles.picker}>
+                  <Text style={styles.pickerText}>Betalt lunsjspause?</Text>
+                </View>
+                <Ionicons
+                  name={paidLunch ? "md-checkbox-outline" : "md-square-outline"}
+                  size={30}
+                  color={overtime ? Colors.secondary : Colors.primaryText}
                 />
+              </TouchableOpacity>
+
+              <View style={[styles.pickerContainer, { marginTop: 15 }]}>
+                <View style={styles.picker}>
+                  <TextInput
+                    style={{ width: "100%", fontSize: 18, color: "#fff" }}
+                    placeholder="Notat"
+                    underlineColorAndroid="transparent"
+                    placeholderTextColor="#808080"
+                    value={note}
+                    onChangeText={(text) => setNote(text)}
+                    multiline={true}
+                  />
+                </View>
               </View>
             </View>
-          ) : null}
-          {extra ? (
-            <TouchableOpacity
-              style={[
-                styles.pickerContainer,
-                {
-                  marginTop: 15,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                },
-              ]}
-              onPress={() => setPaidLunch(!paidLunch)}
-            >
-              <View style={styles.picker}>
-                <Text style={styles.pickerText}>Betalt lunsjspause?</Text>
-              </View>
-              <Ionicons
-                name={paidLunch ? "md-checkbox-outline" : "md-square-outline"}
-                size={30}
-                color={overtime ? Colors.secondary : Colors.primaryText}
-              />
-            </TouchableOpacity>
-          ) : null}
-          {extra ? (
-            <View style={[styles.pickerContainer, { marginTop: 15 }]}>
-              <View style={styles.picker}>
-                <TextInput
-                  style={{ width: "100%", fontSize: 18, color: "#fff" }}
-                  placeholder="Notat"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  value={note}
-                  onChangeText={(text) => setNote(text)}
-                  multiline={true}
-                />
-              </View>
-            </View>
-          ) : null}
+          )}
         </View>
       </ScrollView>
 
       <View style={styles.btnContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={submitHandler}
+          onPress={() => submitHandler()}
           // disabled={true}
         >
           <Text style={styles.btnText}>{btnText}</Text>
@@ -462,6 +493,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.primary,
+  },
+  headerBtn: {
+    marginRight: 10,
   },
   subContainer2: {
     marginHorizontal: 10,
@@ -489,7 +523,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.secondary,
     width: "80%",
     padding: 10,
-    margin: 15,
+    marginBottom: 40,
     borderRadius: 25,
   },
   btnText: {

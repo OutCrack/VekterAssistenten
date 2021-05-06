@@ -44,63 +44,29 @@ const AllShiftsScreen = (props) => {
   const [salaryButton, setSalaryButton] = useState(
     allSalaryProfiles.length > 0 ? true : false
   );
-  const [showMenu, setShowMenu] = useState(false);
+  const [dayOfMonth, setDayOfMonth] = useState(false);
 
   useEffect(() => {
-    // console.log("Amount of Shifts: " + allShifts.length);
-    // console.log("Amount of SalaryProfiles: " + salaryProfiles.length);
-    // let dates = [];
-    // let overtime = [];
     let combined = {};
-    // allShifts.forEach((element) => {
-    //   if(element.type === "normal") {
-    //     dates.push(element.date);
-    //   } else if (element.type === "overtime") {
-    //     overtime.push(element.date);
-    //     console.log("overtime found")
-    //   }
-
-    // });
 
     const overtimeMark = {
       key: "overtime",
-      color: "red",
-      selectedDotColot: "red",
+      color: Colors.secondaryText,
+      selectedDotColot: Colors.secondaryText,
     };
 
     allShifts.forEach((item) => {
-      // console.log(item.type);
-      if(item.type === "overtime") {
+      if (item.type === "overtime") {
         combined[item.date] = {
           selected: true,
-          dots: [overtimeMark]
-        }
+          dots: [overtimeMark],
+        };
       } else {
         combined[item.date] = {
-          selected: true
-        }
+          selected: true,
+        };
       }
     });
-
-    // 
-    // --- THIS IS DEPRICATED --- SEE LINE 71
-    //
-    // for (let i = 0; i < dates.length; i++) {
-    //   for (let y = 0; y < overtime.length; y++) {
-    //     if (dates[i] === overtime[y]) {
-    //       combined[dates[i]] = {
-    //         selected: true,
-    //         dots: [overtimeMark],
-    //       };
-    //       y = overtime.length;
-    //     }
-    //   }
-    //   if (combined[dates[i]] == null) {
-    //     combined[dates[i]] = {
-    //       selected: true,
-    //     };
-    //   }
-    // }
 
     setMarkedDates(combined);
 
@@ -140,6 +106,7 @@ const AllShiftsScreen = (props) => {
 
   const onDatePressHandler = (datePressed) => {
     let date = datePressed.dateString; // YYYY-MM-DD
+    setDayOfMonth(date.split("-")[2]);
     let shifts = [];
     if (dateSelected !== date) {
       allShifts.forEach((element) => {
@@ -197,73 +164,74 @@ const AllShiftsScreen = (props) => {
     setDateSelected(date);
   };
 
-  const deleteHandler = () => {
-    // console.log("Delete  id: " + selectedShift.id)
-    Alert.alert(
-      "",
-      "Ønsker du å slette denne vakten?",
-      [
-        { text: "Nei", style: "cancel" },
-        {
-          text: "Slett",
-          onPress: () => {
-            dispatch(shiftsActions.deleteShift(selectedShift.id));
-            props.navigation.navigate("ShiftCalendar");
-          },
-        },
-      ],
-      { cancelable: true }
-    );
-  };
-
-  props.navigation.setOptions({
-    headerLeft: () => (
-      <TouchableOpacity
-        style={styles.headerBtn}
-        onPress={() => props.navigation.navigate("Profile")}
-      >
-        <Ionicons
-          name={Platform.OS === "android" ? "md-person" : "ios-person"}
-          size={35}
-          color={"#fff"}
-        />
-      </TouchableOpacity>
-    ),
-    headerRight: () => (
-      <TouchableOpacity
-        style={styles.headerBtn}
-        onPress={() => {
-          // console.log("Alle skifts: " + allShifts.length);
-          if (allSalaryProfiles.length > 0) {
-            props.navigation.navigate("Salary", {
-              month: monthShowing,
-            });
-          } else {
-            // console.log(allShifts);
-            Alert.alert(
-              "Ingen lønnsprofil er opprettet.",
-              "Ønsker du å opprette en lønnsprofil?",
-              [
-                { text: "Nei", style: "cancel" },
-                {
-                  text: "Ja",
-                  onPress: () => {
-                    props.navigation.navigate("AddSalaryProfile");
+  // const deleteHandler = () => {
+  //   // console.log("Delete  id: " + selectedShift.id)
+  //   Alert.alert(
+  //     "",
+  //     "Ønsker du å slette denne vakten?",
+  //     [
+  //       { text: "Nei", style: "cancel" },
+  //       {
+  //         text: "Slett",
+  //         onPress: () => {
+  //           dispatch(shiftsActions.deleteShift(selectedShift.id));
+  //           props.navigation.navigate("ShiftCalendar");
+  //         },
+  //       },
+  //     ],
+  //     { cancelable: true }
+  //   );
+  // };
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          style={styles.headerBtn}
+          onPress={() => props.navigation.navigate("Profile")}
+        >
+          <Ionicons
+            name={Platform.OS === "android" ? "md-person" : "ios-person"}
+            size={35}
+            color={"#fff"}
+          />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity
+          style={styles.headerBtn}
+          onPress={() => {
+            // console.log("Alle skifts: " + allShifts.length);
+            if (allSalaryProfiles.length > 0) {
+              props.navigation.navigate("Salary", {
+                month: monthShowing,
+              });
+            } else {
+              // console.log(allShifts);
+              Alert.alert(
+                "Ingen lønnsprofil er opprettet.",
+                "Ønsker du å opprette en lønnsprofil?",
+                [
+                  { text: "Nei", style: "cancel" },
+                  {
+                    text: "Ja",
+                    onPress: () => {
+                      props.navigation.navigate("AddSalaryProfile");
+                    },
                   },
-                },
-              ],
-              { cancelable: true }
-            );
-          }
-        }}
-      >
-        <Ionicons
-          name={Platform.OS === "android" ? "md-cash" : "ios-cash"}
-          size={35}
-          color={"#fff"}
-        />
-      </TouchableOpacity>
-    ),
+                ],
+                { cancelable: true }
+              );
+            }
+          }}
+        >
+          <Ionicons
+            name={Platform.OS === "android" ? "md-cash" : "ios-cash"}
+            size={35}
+            color={"#fff"}
+          />
+        </TouchableOpacity>
+      ),
+    }); //
   });
 
   return (
@@ -293,6 +261,7 @@ const AllShiftsScreen = (props) => {
             startTime={info.item.startTime}
             endTime={info.item.endTime}
             overtime={info.item.percentage}
+            dayOfMonth={dayOfMonth}
             onItemPressed={() =>
               props.navigation.navigate("ShiftDetail", {
                 selectedShift: info.item,
@@ -327,9 +296,7 @@ const AllShiftsScreen = (props) => {
         />
       ) : null} */}
       <TouchableOpacity
-        onPress={() =>
-          props.navigation.navigate("AddShift")
-        }
+        onPress={() => props.navigation.navigate("AddShift")}
         style={styles.addShiftButton}
       >
         <Ionicons name={"md-add"} size={30} color="#052055" />
