@@ -157,3 +157,20 @@ export const updateShift = (
 export const toggleFavorite = (id) => {
   return { type: TOGGLE_FAVORITE, shiftKey: id};
 };
+
+/*
+----------------------------------------------------
+-------------- SERVER SIDE CODE BELOW --------------
+----------------------------------------------------
+*/
+
+export const updateDatebase = () => {
+  return dispatch => {
+    fetch('https://vekterassistenten-default-rtdb.europe-west1.firebasedatabase.app/');
+
+    dispatch({
+      // type: "",
+
+    })
+  }
+}

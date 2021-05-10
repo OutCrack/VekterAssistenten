@@ -7,10 +7,12 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  Button,
+  Modal,
+  Pressable,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelector, useDispatch } from "react-redux";
+// import * as Notifications from "expo-notifications";
 import Colors from "../../constants/Colors";
 
 import * as shiftActions from "../../store/actions/shifts";
@@ -38,8 +40,13 @@ const AddShiftScreen = (props) => {
   const [paidLunch, setPaidLunch] = useState(true);
   const [note, setNote] = useState("");
   const [favorite, setFavorite] = useState(false);
+  const [rutineMin, setRutineMin] = useState("120");
 
   const [extra, setExtra] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
+  // const [paatropp, setPaatropp] = useState(true);
+  // const [avtropp, setAvtropp] = useState(true);
+  // const [rutine, setRutine] = useState(true);
 
   useEffect(() => {
     if (props.route.params?.selectedShift) {
@@ -77,7 +84,53 @@ const AddShiftScreen = (props) => {
     }
   }, [props.route.params?.dateSelected, dates]);
 
-  const submitHandler = useCallback(() => {
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <View style={styles.headButtonContainer}>
+          {/* <TouchableOpacity
+            style={styles.headerBtn}
+            onPress={() => setModalVisible(!modalVisible)}
+          >
+            <Ionicons
+              name={
+                paatropp || avtropp || rutine
+                  ? "notifications"
+                  : "notifications-off"
+              }
+              size={35}
+              color={"#fff"}
+            />
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={styles.headerBtn}
+            onPress={() => setFavorite(!favorite)}
+          >
+            <Ionicons
+              name={favorite ? "heart" : "heart-outline"}
+              size={35}
+              color={"#fff"}
+            />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  });
+
+  // const triggerNotificationHandler = () => {
+  //   console.log("triggerNotificationHandler");
+  //   Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title: "Notification",
+  //       body: "My first noti",
+  //     },
+  //     trigger: {
+  //       seconds: 5,
+  //     },
+  //   });
+  // };
+
+  const submitHandler = () => {
     if (
       name.length < 1 ||
       dates.length < 1 ||
@@ -165,19 +218,7 @@ const AddShiftScreen = (props) => {
         );
       }
     }
-  }, [
-    dispatch,
-    type,
-    name,
-    shiftID,
-    address,
-    dates,
-    startTime,
-    endTime,
-    overtime,
-    paidLunch,
-    note,
-  ]);
+  };
 
   // Changes 4 digits to XX:XX format
   const timeChangeHandler = (input, type) => {
@@ -235,25 +276,73 @@ const AddShiftScreen = (props) => {
     }
   };
 
-  useEffect(() => {
-    props.navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={styles.headerBtn}
-          onPress={() => setFavorite(!favorite)}
-        >
-          <Ionicons
-            name={favorite ? "heart" : "heart-outline"}
-            size={35}
-            color={"#fff"}
-          />
-        </TouchableOpacity>
-      ),
-    });
-  });
-
   return (
     <View style={styles.container}>
+      {/* <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+        onDismiss={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalRowText}>Påtropp</Text>
+              <Pressable onPress={() => setPaatropp(!paatropp)}>
+                <Ionicons
+                  name={paatropp ? "checkbox" : "square-outline"}
+                  size={35}
+                  color={Colors.secondary}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalRowText}>Avtropp</Text>
+              <Pressable onPress={() => setAvtropp(!avtropp)}>
+                <Ionicons
+                  name={avtropp ? "checkbox" : "square-outline"}
+                  size={35}
+                  color={Colors.secondary}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalRowText}>Rutine</Text>
+              <View style={{flexDirection: "row", alignItems: "center"}}>
+                <TextInput
+                  style={{ borderColor: Colors.primaryText, color: Colors.primaryText, borderWidth: 0.5, borderRadius: 15, padding: 5, paddingHorizontal: 10, marginRight: 5 }}
+                  value={rutineMin}
+                  placeholder={"120"}
+                  placeholderTextColor="#999999"
+                  editable={rutine ? true : false}
+                  onChangeText={val => setRutineMin(val)}
+                  keyboardType="number-pad"
+                  maxLength={3}
+                />
+                <Text style={styles.modalRowText}>min</Text>
+              </View>
+              <Pressable onPress={() => setRutine(!rutine)}>
+                <Ionicons
+                  name={rutine ? "checkbox" : "square-outline"}
+                  size={35}
+                  color={Colors.secondary}
+                />
+              </Pressable>
+            </View>
+            <Pressable
+              style={styles.modalBtn}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.modalBtnText}>Lagre</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal> */}
       <ScrollView alwaysBounceVertical={true}>
         <View style={styles.testContainer}>
           <Text style={styles.headerText}>NAVN OG ID</Text>
@@ -494,8 +583,61 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    // marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    width: "70%",
+    // alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    backgroundColor: Colors.primary,
+    borderWidth: 3,
+    borderColor: Colors.primaryDark
+  },
+  modalHeader: {
+    padding: 10,
+  },
+  modalRow: {
+    flexDirection: "row",
+    padding: 10,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  modalRowText: {
+    fontSize: 16,
+    color: Colors.primaryText
+  },
+  modalBtn: {
+    marginTop: 10,
+    alignItems: "center",
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: Colors.secondary,
+  },
+  modalBtnText: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  headButtonContainer: {
+    flexDirection: "row",
+  },
   headerBtn: {
-    marginRight: 10,
+    marginRight: 20,
   },
   subContainer2: {
     marginHorizontal: 10,

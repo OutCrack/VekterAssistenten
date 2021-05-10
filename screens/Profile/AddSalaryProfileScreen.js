@@ -326,7 +326,7 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setNightExtra(text)}
-                  maxLength={5}
+                  maxLength={6}
                   keyboardType="numeric"
                 />
               </View>
@@ -341,7 +341,7 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setWeekendExtra(text)}
-                  maxLength={5}
+                  maxLength={6}
                   keyboardType="numeric"
                 />
               </View>
@@ -356,7 +356,7 @@ const AddSalaryProfileScreen = (props) => {
                   underlineColorAndroid="transparent"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => setHolidayExtra(text)}
-                  maxLength={5}
+                  maxLength={6}
                   keyboardType="numeric"
                 />
               </View>

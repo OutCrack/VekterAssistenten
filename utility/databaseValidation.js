@@ -49,7 +49,6 @@ export const findSalaryProfile = (allSalaryProfiles, startDate, endDate) => {
   allSalaryProfiles.forEach((salaryProfile) => {
 		const salaryProfileStart = salaryProfile.startDate.split(".");
 		const salaryProfileEnd = salaryProfile.endDate.split(".");
-		// console.log(startD[2], salaryProfileStart[0], endD[2], salaryProfileStart[0])
 		if(startD[0] <= salaryProfileStart[2] && endD[0] == salaryProfileStart[2]) {
 			if(endD[1] > salaryProfileStart[1]) {
 				isFound = true;

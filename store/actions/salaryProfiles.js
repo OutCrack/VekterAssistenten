@@ -159,3 +159,30 @@ export const editSalaryProfile = (
     }
   };
 };
+
+/*
+--------------------------------------------------------------------------------
+---------------------------- SERVER SIDE CODE BELOW ----------------------------
+--------------------------------------------------------------------------------
+*/
+
+export const updateDatebase = () => {
+  return async dispatch => {
+    const response = await fetch('https://vekterassistenten-default-rtdb.europe-west1.firebasedatabase.app/salaryprofiles.json', {
+      methodd: POST,
+      header: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify()
+    });
+
+    const resData = await response.json();
+
+    console.log(resData);
+
+    dispatch({
+      // type: "",
+
+    })
+  }
+}

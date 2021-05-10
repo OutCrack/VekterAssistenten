@@ -19,7 +19,7 @@ import { Calendar } from "react-native-calendars";
 
 import ListItem from "../../components/ShiftListItem";
 import Colors from "../../constants/Colors";
-import PopUpMenu from "../../components/UI/PopUpMenu";
+// import PopUpMenu from "../../components/UI/PopUpMenu";
 
 const AllShiftsScreen = (props) => {
   const allShifts = useSelector((state) => state.shifts.shifts);
@@ -39,15 +39,22 @@ const AllShiftsScreen = (props) => {
   const [markedDates, setMarkedDates] = useState();
   const [dateSelected, setDateSelected] = useState();
   const [monthShowing, setMonthShowing] = useState();
+  const [yearShowing, setYearShowing] = useState();
   const [showWeekNumbers, setShowWeekNumbers] = useState(true);
   const [hideExtraDays, setHideExtraDays] = useState(true);
-  const [salaryButton, setSalaryButton] = useState(
-    allSalaryProfiles.length > 0 ? true : false
-  );
   const [dayOfMonth, setDayOfMonth] = useState(false);
 
   useEffect(() => {
     let combined = {};
+    let shifts = [];
+
+    let today = new Date();
+    let MyDateString =
+      today.getFullYear() +
+      "-" +
+      ("0" + (today.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + today.getDate()).slice(-2);
 
     const overtimeMark = {
       key: "overtime",
@@ -66,28 +73,18 @@ const AllShiftsScreen = (props) => {
           selected: true,
         };
       }
-    });
-
-    setMarkedDates(combined);
-
-    let shifts = [];
-    let today = new Date();
-    let MyDateString =
-      today.getFullYear() +
-      "-" +
-      ("0" + (today.getMonth() + 1)).slice(-2) +
-      "-" +
-      ("0" + today.getDate()).slice(-2);
-
-    setDateSelected(MyDateString);
-    setMonthShowing(today.getMonth() + 1);
-
-    allShifts.forEach((element) => {
-      if (element.date === MyDateString) {
-        shifts.push(element);
+      if (item.date === MyDateString) {
+        shifts.push(item);
       }
     });
 
+    setMarkedDates(combined); // Marking dates with shifts in calendar
+
+    setDateSelected(MyDateString);
+    setMonthShowing(today.getMonth() + 1);
+    setYearShowing(today.getFullYear());
+
+    // Sort shifts by startTime
     if (shifts.length > 1) {
       for (let i = 0; i < shifts.length; i++) {
         const element = shifts[i];
@@ -133,9 +130,8 @@ const AllShiftsScreen = (props) => {
   };
 
   const changeMonth = (newMonth) => {
-    setMonthShowing(
-      newMonth.month.length > 1 ? newMonth.month : "0" + newMonth.month
-    );
+    setMonthShowing(newMonth.month);
+    setYearShowing(newMonth.year);
     let date =
       newMonth.year +
       "-" +
@@ -200,13 +196,12 @@ const AllShiftsScreen = (props) => {
         <TouchableOpacity
           style={styles.headerBtn}
           onPress={() => {
-            // console.log("Alle skifts: " + allShifts.length);
             if (allSalaryProfiles.length > 0) {
               props.navigation.navigate("Salary", {
-                month: monthShowing,
+                selectedMonth: monthShowing,
+                year: yearShowing,
               });
             } else {
-              // console.log(allShifts);
               Alert.alert(
                 "Ingen lønnsprofil er opprettet.",
                 "Ønsker du å opprette en lønnsprofil?",

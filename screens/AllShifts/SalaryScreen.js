@@ -7,14 +7,35 @@ import SalaryCalc from "../../utility/earningsCalculation";
 import Colors from "../../constants/Colors";
 
 const SalaryScreen = (props) => {
+  const { selectedMonth, year } = props.route.params;
   const allShifts = useSelector((state) => state.shifts.shifts);
-//   const allOvertime = useSelector((state) => state.overtime.overtime);
   const allSalaryProfiles = useSelector(
     (state) => state.salaryProfiles.salaryProfiles
   );
+  let shifts = [];
+  let overtime = [];
 
-  const { month } = props.route.params;
-  let selectedMonth = month.length > 1 ? month : "0" + month;
+  // THIS MUST BE BETTER
+  let salaryProfile;
+  allSalaryProfiles.forEach((sp) => {
+    const startDate = sp.startDate.split("-");
+    const endDate = sp.endDate.split("-");
+    if (year >= parseInt(startDate[0]) && year <= parseInt(endDate[0])) {
+      salaryProfile = sp;
+    }
+  });
+
+  allShifts.forEach((element) => {
+    let month = element.date.split("-");
+    if (parseInt(month[1]) === selectedMonth) {
+      if (element.type === "normal") {
+        shifts.push(element);
+      } else if (element.type === "overtime") {
+        overtime.push(element);
+      }
+    }
+  });
+
 
   let overtime50Comp = null,
     overtimeMonthlyComp = null,
@@ -23,8 +44,6 @@ const SalaryScreen = (props) => {
     overtimeBreakComp = null,
     redDaysComp = null;
 
-  let shifts = [];
-  let overtime = [];
   let TOTAL = 0.0;
   let hoursShift = 0.0,
     night = 0.0,
@@ -44,19 +63,6 @@ const SalaryScreen = (props) => {
     overtime50Cash = 0.0,
     overtime100Cash = 0.0;
 
-  allShifts.forEach((element) => {
-    let month = element.date.split("-");
-    if (month[1] === selectedMonth) {
-      shifts.push(element);
-    }
-  });
-
-//   allOvertime.forEach((element) => {
-//     let month = element.date.split("-");
-//     if (month[1] === selectedMonth) {
-//       overtime.push(element);
-//     }
-//   });
 
   // Calulation shifts and overtime
   shifts.forEach((value) => {
@@ -95,35 +101,35 @@ const SalaryScreen = (props) => {
     redDay += parseFloat(
       HourCalc(value.date, value.startTime, value.endTime, "redDay")
     );
-    if (value.percentage === "50") {
+    if (value.overtimePercentage === "50") {
       hoursOvertime50 += parseFloat(
         HourCalc("", value.startTime, value.endTime, "hours")
       );
-    } else if (value.percentage === "100") {
+    } else if (value.overtimePercentage === "100") {
       hoursOvertime100 += parseFloat(
         HourCalc("", value.startTime, value.endTime, "hours")
       );
     }
     if (value.foodMoney) {
       foodMoneyCount++;
-      foodMoneyCash += allSalaryProfiles[0].foodMoney;
-      overtimeBreakCash += allSalaryProfiles[0].hourly / 2;
+      foodMoneyCash += salaryProfile.foodMoney;
+      overtimeBreakCash += salaryProfile.hourly / 2;
     }
   });
 
-  hoursCash = SalaryCalc("hours", hoursShift, allSalaryProfiles[0].hourly);
-  nightCash = SalaryCalc("night", night, allSalaryProfiles[0].nightExtra);
+  hoursCash = SalaryCalc("hours", hoursShift, salaryProfile.hourly);
+  nightCash = SalaryCalc("night", night, salaryProfile.nightExtra);
   weekendCash = SalaryCalc(
     "weekend",
     weekend,
-    allSalaryProfiles[0].weekendExtra
+    salaryProfile.weekendExtra
   );
   overtimeMonthlyCash = SalaryCalc(
     "hours",
-    hoursShift - allSalaryProfiles[0].monthlyHours,
-    allSalaryProfiles[0].hourly / 2
+    hoursShift - salaryProfile.monthlyHours,
+    salaryProfile.hourly / 2
   );
-  redDayCash = SalaryCalc("hours", redDay, allSalaryProfiles[0].hourly);
+  redDayCash = SalaryCalc("hours", redDay, salaryProfile.hourly);
 
   TOTAL += hoursCash + nightCash + weekendCash + redDayCash;
 
@@ -132,14 +138,14 @@ const SalaryScreen = (props) => {
       overtime50Cash = SalaryCalc(
         "hours",
         hoursOvertime50,
-        allSalaryProfiles[0].hourly / 2
+        salaryProfile.hourly / 2
       );
     }
     if (hoursOvertime100 > 0) {
       overtime100Cash = SalaryCalc(
         "hours",
         hoursOvertime100,
-        allSalaryProfiles[0].hourly
+        salaryProfile.hourly
       );
     }
     TOTAL +=
@@ -150,12 +156,12 @@ const SalaryScreen = (props) => {
       overtimeBreakCash;
   }
 
-  if (hoursShift > allSalaryProfiles[0].monthlyHours) {
+  if (hoursShift > salaryProfile.monthlyHours) {
     overtimeMonthlyComp = (
       <View style={styles.rowContainer}>
         <Text style={styles.rowTitleText}>
-          {allSalaryProfiles[0].monthlyHours}h:{" "}
-          {(hoursShift - allSalaryProfiles[0].monthlyHours).toFixed(2)}
+          {salaryProfile.monthlyHours}h:{" "}
+          {(hoursShift - salaryProfile.monthlyHours).toFixed(2)}
         </Text>
         <Text style={styles.rowCashText}>
           {overtimeMonthlyCash
@@ -229,7 +235,7 @@ const SalaryScreen = (props) => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTextSmall}>
-          {getMonth(selectedMonth)} 2020
+          {getMonth(selectedMonth)} {year}
         </Text>
         <Text style={styles.headerTextBig}>
           Kr{" "}
@@ -248,7 +254,8 @@ const SalaryScreen = (props) => {
               {hoursCash
                 .toFixed(2)
                 .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Kr
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+              Kr
             </Text>
           </View>
           <View style={styles.rowContainer}>
@@ -257,7 +264,8 @@ const SalaryScreen = (props) => {
               {nightCash
                 .toFixed(2)
                 .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Kr
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+              Kr
             </Text>
           </View>
           <View style={styles.rowContainer}>
@@ -266,7 +274,8 @@ const SalaryScreen = (props) => {
               {weekendCash
                 .toFixed(2)
                 .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Kr
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+              Kr
             </Text>
           </View>
           {overtimeMonthlyComp}
@@ -287,13 +296,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   headerContainer: {
-    paddingVertical: 10,
+    paddingVertical: 20,
     alignItems: "center",
   },
   headerTextSmall: {
     color: "#fff",
     fontSize: 20,
-    marginBottom: 5,
+    marginBottom: 10,
   },
   headerTextBig: {
     fontSize: 50,
@@ -311,7 +320,7 @@ const styles = StyleSheet.create({
   salaryHeaderTxt: {
     fontWeight: "bold",
     fontSize: 35,
-    color: Colors.primaryText
+    color: Colors.primaryText,
   },
   rowContainer: {
     flexDirection: "row",
@@ -325,41 +334,41 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     textAlignVertical: "center",
-    color: Colors.primaryText
+    color: Colors.primaryText,
   },
   rowCashText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: Colors.primaryText
+    color: Colors.primaryText,
   },
 });
 
 const getMonth = (month) => {
   switch (month) {
-    case "01":
-      return "January";
-    case "02":
-      return "February";
-    case "03":
-      return "March";
-    case "04":
+    case 1:
+      return "Januar";
+    case 2:
+      return "Februar";
+    case 3:
+      return "Mars";
+    case 4:
       return "April";
-    case "05":
-      return "May";
-    case "06":
-      return "June";
-    case "07":
+    case 5:
+      return "Mai";
+    case 6:
+      return "Juni";
+    case 7:
       return "July";
-    case "08":
+    case 8:
       return "August";
-    case "09":
+    case 9:
       return "September";
-    case "10":
-      return "October";
-    case "11":
+    case 10:
+      return "Oktober";
+    case 11:
       return "November";
-    case "12":
-      return "December";
+    case 12:
+      return "Desember";
   }
 };
 

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   separator: {
     flex: 1,
     borderColor: "#D3D3D3",
-    borderWidth: 0.8,
+    borderWidth: 0.5,
     marginVertical: 10
   }
 })
