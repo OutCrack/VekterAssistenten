@@ -84,7 +84,7 @@ const AllShiftsScreen = (props) => {
     setMonthShowing(today.getMonth() + 1);
     setYearShowing(today.getFullYear());
 
-    // Sort shifts by startTime
+    // Sort shifts by startTime NEEDS TO BE LOOKED AT. DOES NOT WORK PROPPERLY
     if (shifts.length > 1) {
       for (let i = 0; i < shifts.length; i++) {
         const element = shifts[i];

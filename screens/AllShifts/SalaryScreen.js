@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
+import SalaryRow from "../../components/UI/SalaryRow";
+
 import HourCalc from "../../utility/hourCalculation";
 import SalaryCalc from "../../utility/earningsCalculation";
 import Colors from "../../constants/Colors";
@@ -36,14 +38,6 @@ const SalaryScreen = (props) => {
     }
   });
 
-
-  let overtime50Comp = null,
-    overtimeMonthlyComp = null,
-    overtime100Comp = null,
-    foodMoneyComp = null,
-    overtimeBreakComp = null,
-    redDaysComp = null;
-
   let TOTAL = 0.0;
   let hoursShift = 0.0,
     night = 0.0,
@@ -62,7 +56,6 @@ const SalaryScreen = (props) => {
   let overtimeMonthlyCash = 0.0,
     overtime50Cash = 0.0,
     overtime100Cash = 0.0;
-
 
   // Calulation shifts and overtime
   shifts.forEach((value) => {
@@ -119,11 +112,7 @@ const SalaryScreen = (props) => {
 
   hoursCash = SalaryCalc("hours", hoursShift, salaryProfile.hourly);
   nightCash = SalaryCalc("night", night, salaryProfile.nightExtra);
-  weekendCash = SalaryCalc(
-    "weekend",
-    weekend,
-    salaryProfile.weekendExtra
-  );
+  weekendCash = SalaryCalc("weekend", weekend, salaryProfile.weekendExtra);
   overtimeMonthlyCash = SalaryCalc(
     "hours",
     hoursShift - salaryProfile.monthlyHours,
@@ -156,80 +145,18 @@ const SalaryScreen = (props) => {
       overtimeBreakCash;
   }
 
-  if (hoursShift > salaryProfile.monthlyHours) {
-    overtimeMonthlyComp = (
-      <View style={styles.rowContainer}>
-        <Text style={styles.rowTitleText}>
-          {salaryProfile.monthlyHours}h:{" "}
-          {(hoursShift - salaryProfile.monthlyHours).toFixed(2)}
-        </Text>
-        <Text style={styles.rowCashText}>
-          {overtimeMonthlyCash
-            .toFixed(2)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-        </Text>
-      </View>
-    );
-  }
 
-  if (overtime.length > 0) {
-    if (hoursOvertime50 > 0) {
-      overtime50Comp = (
-        <View style={styles.rowContainer}>
-          <Text style={styles.rowTitleText}>
-            Overtime 50%: {hoursOvertime50.toFixed(2)}
-          </Text>
-          <Text style={styles.rowCashText}>
-            {overtime50Cash
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          </Text>
-        </View>
-      );
-    }
-
-    if (hoursOvertime100 > 0) {
-      overtime100Comp = (
-        <View style={styles.rowContainer}>
-          <Text style={styles.rowTitleText}>
-            Overtime 100%: {hoursOvertime100.toFixed(2)}
-          </Text>
-          <Text style={styles.rowCashText}>
-            {overtime100Cash
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-          </Text>
-        </View>
-      );
-    }
-
-    if (foodMoneyCount > 0) {
-      foodMoneyComp = (
-        <View style={styles.rowContainer}>
-          <Text style={styles.rowTitleText}>Foodmoney: {foodMoneyCount}</Text>
-          <Text style={styles.rowCashText}>{foodMoneyCash.toFixed(2)}</Text>
-        </View>
-      );
-      overtimeBreakComp = (
-        <View style={styles.rowContainer}>
-          <Text style={styles.rowTitleText}>
-            Overtime Break: {foodMoneyCount}
-          </Text>
-          <Text style={styles.rowCashText}>{overtimeBreakCash.toFixed(2)}</Text>
-        </View>
-      );
-    }
-  }
-
-  redDaysComp = (
-    <View style={styles.rowContainer}>
-      <Text style={styles.rowTitleText}>Helligdager: {redDay.toFixed(2)}</Text>
-      <Text style={styles.rowCashText}>{redDayCash.toFixed(2)}</Text>
-    </View>
-  );
+  // NEED TO IMPLENET THIS SOMEHOW. MONEY YOU GET FOR HAVING A BREAK AFTER 2 HOURS OVERTIME
+  // if (foodMoneyCount > 0) {
+  //   overtimeBreakComp = (
+  //     <View style={styles.rowContainer}>
+  //       <Text style={styles.rowTitleText}>
+  //         Overtime Break: {foodMoneyCount}
+  //       </Text>
+  //       <Text style={styles.rowCashText}>{overtimeBreakCash.toFixed(2)}</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -245,45 +172,47 @@ const SalaryScreen = (props) => {
         </Text>
       </View>
       <View style={styles.salaryContainer}>
-        <ScrollView alwaysBounceVertical={false}>
-          <View style={styles.rowContainer}>
-            <Text style={styles.rowTitleText}>
-              Timer: {hoursShift.toFixed(2)}
-            </Text>
-            <Text style={styles.rowCashText}>
-              {hoursCash
-                .toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-              Kr
-            </Text>
-          </View>
-          <View style={styles.rowContainer}>
-            <Text style={styles.rowTitleText}>Natt: {night.toFixed(2)}</Text>
-            <Text style={styles.rowCashText}>
-              {nightCash
-                .toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-              Kr
-            </Text>
-          </View>
-          <View style={styles.rowContainer}>
-            <Text style={styles.rowTitleText}>Helg: {weekend.toFixed(2)}</Text>
-            <Text style={styles.rowCashText}>
-              {weekendCash
-                .toFixed(2)
-                .toString()
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-              Kr
-            </Text>
-          </View>
-          {overtimeMonthlyComp}
-          {overtime50Comp}
-          {overtime100Comp}
-          {foodMoneyComp}
-          {overtimeBreakComp}
-          {redDaysComp}
+        <ScrollView alwaysBounceVertical={true}>
+          <SalaryRow
+            title="Månedslønn"
+            hours={hoursShift.toFixed(2)}
+            earnings={hoursCash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Nattillegg"
+            hours={night.toFixed(2)}
+            earnings={nightCash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Lørdag-/søndagstillegg"
+            hours={weekend.toFixed(2)}
+            earnings={weekendCash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Mertid"
+            hours={(hoursShift - salaryProfile.monthlyHours).toFixed(2)}
+            earnings={overtimeMonthlyCash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Overtidstillegg 50%"
+            hours={hoursOvertime50.toFixed(2)}
+            earnings={overtime50Cash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Overtidstillegg 100%"
+            hours={hoursOvertime100.toFixed(2)}
+            earnings={overtime100Cash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Diett v/overtid"
+            hours={foodMoneyCount}
+            earnings={foodMoneyCash.toFixed(2)}
+          />
+          <SalaryRow
+            title="Helligdagstllegg"
+            hours={redDay.toFixed(2)}
+            earnings={redDayCash.toFixed(2)}
+          />
         </ScrollView>
       </View>
     </View>
@@ -316,30 +245,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
     paddingTop: 20,
     paddingHorizontal: 10,
-  },
-  salaryHeaderTxt: {
-    fontWeight: "bold",
-    fontSize: 35,
-    color: Colors.primaryText,
-  },
-  rowContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 10,
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  rowTitleText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlignVertical: "center",
-    color: Colors.primaryText,
-  },
-  rowCashText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: Colors.primaryText,
   },
 });
 
