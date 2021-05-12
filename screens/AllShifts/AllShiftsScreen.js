@@ -42,7 +42,7 @@ const AllShiftsScreen = (props) => {
   const [yearShowing, setYearShowing] = useState();
   const [showWeekNumbers, setShowWeekNumbers] = useState(true);
   const [hideExtraDays, setHideExtraDays] = useState(true);
-  const [dayOfMonth, setDayOfMonth] = useState(false);
+  const [dayOfMonth, setDayOfMonth] = useState(new Date().getDate());
 
   useEffect(() => {
     let combined = {};

@@ -7,18 +7,22 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import { useDispatch } from 'react-redux';
 
 import AuthInput from "../../components/UI/AuthInput";
 import Colors from "../../constants/Colors";
+import * as authActions from "../../store/actions/auth";
 
 const AuthScreen = (props) => {
+  const dispatch = useDispatch();
+
   const [authMode, setAuthMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const signupHandler = () => {
-    alert("Sign up is pressed");
+    dispatch(authActions.signup(email, password));
   };
 
   const forgotPasswordHandler = () => {

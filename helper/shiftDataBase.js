@@ -17,6 +17,18 @@ export const initShiftDB = () => {
           reject(err);
         }
       );
+      tx.executeSql(
+        "CREATE TABLE IF NOT EXISTS favoriteShifts (id INTEGER PRIMARY KEY NOT NULL, shiftId INTEGER );",
+        [],
+        // SUCCESS FUNCTION
+        () => {
+          resolve();
+        },
+        // ERROR FUNCTION
+        (_, err) => {
+          reject(err);
+        }
+      );
     });
   });
   return promise;
@@ -68,7 +80,7 @@ export const insertShift = (
           endTime,
           overtimePercentage,
           paidLunch,
-          note,
+          note
         ],
         // SUCCESS FUNCTION
         (_, result) => {

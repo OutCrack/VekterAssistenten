@@ -14,7 +14,6 @@ export const loadSalaryProfiles = (props) => {
   return async (dispatch) => {
     try {
       const dbResult = await fetchSalaryProfiles(props);
-      console.log("Loading SalaryProfiles");
       console.log(dbResult);
       dispatch({
         type: SET_SALARYPROFILES,
