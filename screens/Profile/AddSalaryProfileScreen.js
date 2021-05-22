@@ -18,6 +18,8 @@ import Colors from "../../constants/Colors";
 import Separator from "../../components/Separator";
 import { validSalaryProfileInput } from "../../utility/inputValidation";
 import { findSalaryProfile } from "../../utility/databaseValidation";
+import InfoModal from "../../components/UI/InfoModal";
+import DefaultInput from "../../components/UI/DefaultInput";
 
 const AddSalaryProfileScreen = (props) => {
   const allSP = useSelector((state) => state.salaryProfiles.salaryProfiles);
@@ -42,6 +44,7 @@ const AddSalaryProfileScreen = (props) => {
   const [showOvertime, setShowOvertime] = useState(true);
   const [showFunctionSupplement, setShowFunctionSupplement] = useState(false);
   const [showServiceExtension, setShowServiceExtension] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const submitHandler = () => {
     if (
@@ -103,6 +106,7 @@ const AddSalaryProfileScreen = (props) => {
       }
     }
   };
+
   useEffect(() => {
     props.navigation.setOptions({
       headerRight: () => (
@@ -117,383 +121,75 @@ const AddSalaryProfileScreen = (props) => {
     });
   });
 
+  const showModalHandler = (val) => {
+    console.log("showModalHandler " + val);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView alwaysBounceVertical={true}>
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowTitle(!showTitle)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                title ? { color: Colors.secondary } : null,
-              ]}
-            >
-              TITTEL
-            </Text>
-            <Ionicons
-              name={showTitle ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={title ? Colors.secondary : Colors.primaryText}
-            />
-          </TouchableOpacity>
-          {showTitle && (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Ionicons
-                    name="ios-paper-plane"
-                    size={30}
-                    color={Colors.secondary}
-                  />
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Tittel"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setTitle(text)}
-                  maxLength={25}
-                />
-              </View>
-            </View>
-          )}
-        </View>
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowDates(!showDates)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                startDate && endDate ? { color: Colors.secondary } : null,
-              ]}
-            >
-              DATO
-            </Text>
-            <Ionicons
-              name={showDates ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={
-                startDate && endDate ? Colors.secondary : Colors.primaryText
-              }
-            />
-          </TouchableOpacity>
-          {showDates && (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Ionicons
-                    name="md-calendar"
-                    size={30}
-                    color={Colors.secondary}
-                  />
-                </View>
-                <Text style={[styles.pickerLabelText, { marginRight: 10 }]}>
-                  Fra:
-                </Text>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Startdato"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setStartDate(text)}
-                  maxLength={10}
-                  keyboardType="numeric"
-                />
-              </View>
-              <Separator />
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Ionicons
-                    name="md-calendar"
-                    size={30}
-                    color={Colors.secondary}
-                  />
-                </View>
-                <Text style={[styles.pickerLabelText, { marginRight: 10 }]}>
-                  Til:
-                </Text>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Sluttdato"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setEndDate(text)}
-                  maxLength={10}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          )}
-        </View>
+        <DefaultInput
+          containerTitle="TITTEL & DATO"
+          value={[title, startDate, endDate]}
+          setValue={[setTitle, setStartDate, setEndDate]}
+          icon={["ios-paper-plane", "calendar", "calendar"]}
+          textInputLabel={[null, "Fra:", "Til:"]}
+          placeholder={["Tittel på profil", "Startdato", "Sluttdato"]}
+          showModal={showModalHandler}
+          maxLength={[25, 10, 10]}
+          visible={true}
+        />
 
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowHourly(!showHourly)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                hourly ? { color: Colors.secondary } : null,
-              ]}
-            >
-              TIMELØNN
-            </Text>
-            <Ionicons
-              name={showHourly ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={hourly ? Colors.secondary : Colors.primaryText}
-            />
-          </TouchableOpacity>
-          {showHourly ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Ionicons
-                    name="ios-hourglass"
-                    size={30}
-                    color={Colors.secondary}
-                  />
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Timeslønn sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setHourly(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-              <Separator />
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Vekterfagbrev:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Vekterfagbrev sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setCertificate(text)}
-                  maxLength={5}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
+        <DefaultInput
+          containerTitle="LØNN"
+          value={[hourly, monthlyHours, certificate]}
+          setValue={[setHourly, setMonthlyHours, setCertificate]}
+          icon={["ios-hourglass", null, null]}
+          textInputLabel={[null, "Timer i måned:", "Fagbrev:"]}
+          placeholder={["Timelønn sats", "Antall timer", "Fagbrev sats"]}
+          showModal={showModalHandler}
+          maxLength={6}
+          visible={true}
+        />
 
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowExtra(!showExtra)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                nightExtra && weekendExtra && holidayExtra
-                  ? { color: Colors.secondary }
-                  : null,
-              ]}
-            >
-              TILLEGG
-            </Text>
-            <Ionicons
-              name={showExtra ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={
-                nightExtra && weekendExtra && holidayExtra
-                  ? Colors.secondary
-                  : Colors.primaryText
-              }
-            />
-          </TouchableOpacity>
-          {showExtra ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Natt:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Nattillegg sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setNightExtra(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-              <Separator />
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Helg:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Helgetillegg sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setWeekendExtra(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-              <Separator />
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Helligdag:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Helgetillegg sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setHolidayExtra(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
-
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowOvertime(!showOvertime)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                monthlyHours && foodMoney ? { color: Colors.secondary } : null,
-              ]}
-            >
-              OVERTID
-            </Text>
-            <Ionicons
-              name={showOvertime ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={
-                monthlyHours && foodMoney
-                  ? Colors.secondary
-                  : Colors.primaryText
-              }
-            />
-          </TouchableOpacity>
-          {showOvertime ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Timer i måned:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Timer i måned"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setMonthlyHours(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-              <Separator />
-              <View style={styles.picker}>
-                <View style={styles.iconContainer}>
-                  <Text style={styles.pickerLabelText}>Matpenger:</Text>
-                </View>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Matpenger sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setFoodMoney(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
-
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowFunctionSupplement(!showFunctionSupplement)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                functionSupplement ? { color: Colors.secondary } : null,
-              ]}
-            >
-              FUNKSJONSTILLEGG
-            </Text>
-            <Ionicons
-              name={showFunctionSupplement ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={functionSupplement ? Colors.secondary : Colors.primaryText}
-            />
-          </TouchableOpacity>
-
-          {showFunctionSupplement ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <TextInput
-                  style={{ width: "80%", fontSize: 18, color: "#fff" }}
-                  placeholder="Funksjonstillegg sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setFunctionSupplement(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
-
-        <View style={styles.testContainer}>
-          <TouchableOpacity
-            style={styles.headerContainer}
-            onPress={() => setShowServiceExtension(!showServiceExtension)}
-          >
-            <Text
-              style={[
-                styles.headerText,
-                serviceExtension ? { color: Colors.secondary } : null,
-              ]}
-            >
-              TJENESTEGRENSTILLEGG
-            </Text>
-            <Ionicons
-              name={showServiceExtension ? "ios-arrow-up" : "ios-arrow-down"}
-              size={20}
-              color={serviceExtension ? Colors.secondary : Colors.primaryText}
-            />
-          </TouchableOpacity>
-          {showServiceExtension ? (
-            <View style={styles.pickerContainer}>
-              <View style={styles.picker}>
-                <TextInput
-                  style={{ width: "100%", fontSize: 18, color: "#fff" }}
-                  placeholder="Tjenestegrenstillegg sats"
-                  underlineColorAndroid="transparent"
-                  placeholderTextColor="#808080"
-                  onChangeText={(text) => setServiceExtension(text)}
-                  maxLength={6}
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-          ) : null}
-        </View>
+        <DefaultInput
+          containerTitle="TILLEGG"
+          value={[
+            nightExtra,
+            weekendExtra,
+            holidayExtra,
+            foodMoney,
+            functionSupplement,
+            serviceExtension,
+          ]}
+          setValue={[
+            setNightExtra,
+            setWeekendExtra,
+            setHolidayExtra,
+            setFoodMoney,
+            setFunctionSupplement,
+            setServiceExtension,
+          ]}
+          icon={[null]}
+          textInputLabel={[
+            "Natt:",
+            "Helg:",
+            "Helligdag:",
+            "Matpenger:",
+            "Funksjonstillegg",
+            "Tjenestegrenstillegg",
+          ]}
+          placeholder={[
+            "Natt sats",
+            "Helge sats",
+            "Helligdag sats",
+            "Matpenger sats",
+            "Funksjonstillegg sats",
+            "Tjenestegrenstillegg sats",
+          ]}
+          showModal={showModalHandler}
+          maxLength={6}
+        />
       </ScrollView>
     </View>
   );
@@ -526,6 +222,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.secondary,
     paddingHorizontal: 20,
     paddingVertical: 10,
+    // flexDirection: "row",
+    // justifyContent: "space-between"
   },
   picker: {
     flexDirection: "row",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   View,
@@ -6,7 +6,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 
 import * as salaryProfileActions from "../../store/actions/salaryProfiles";
@@ -26,7 +26,9 @@ const SalaryProfileDetailScreen = (props) => {
         {
           text: "Slett",
           onPress: () => {
-            dispatch(salaryProfileActions.deleteSalaryProfile(selectedSalaryProfile.id));
+            dispatch(
+              salaryProfileActions.deleteSalaryProfile(selectedSalaryProfile.id)
+            );
             props.navigation.goBack();
           },
         },
@@ -34,37 +36,38 @@ const SalaryProfileDetailScreen = (props) => {
       { cancelable: true }
     );
   };
-
-  props.navigation.setOptions({
-    headerRight: () => (
-      <View style={styles.headerRightBtnContainer}>
-        <TouchableOpacity
-          style={styles.headerRightBtn}
-          onPress={() => deleteHandler()}
-        >
-          <Ionicons
-            name={Platform.OS === "android" ? "md-trash" : "ios-trash"}
-            size={35}
-            color={"#fff"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.headerRightBtn}
-          onPress={() => {
-            props.navigation.navigate("Salary", {
-              month: monthShowing,
-            });
-          }}
-        >
-          <Ionicons
-            name={Platform.OS === "android" ? "md-create" : "ios-create"}
-            size={35}
-            color={"#fff"}
-          />
-        </TouchableOpacity>
-      </View>
-    ),
-  });
+  useEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => (
+        <View style={styles.headerRightBtnContainer}>
+          <TouchableOpacity
+            style={styles.headerRightBtn}
+            onPress={() => deleteHandler()}
+          >
+            <Ionicons
+              name={Platform.OS === "android" ? "md-trash" : "ios-trash"}
+              size={35}
+              color={"#fff"}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.headerRightBtn}
+            onPress={() => {
+              props.navigation.navigate("Salary", {
+                month: monthShowing,
+              });
+            }}
+          >
+            <Ionicons
+              name={Platform.OS === "android" ? "md-create" : "ios-create"}
+              size={35}
+              color={"#fff"}
+            />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, []);
 
   return (
     <View style={styles.container}>

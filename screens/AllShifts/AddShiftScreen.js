@@ -40,7 +40,7 @@ const AddShiftScreen = (props) => {
   const [paidLunch, setPaidLunch] = useState(true);
   const [note, setNote] = useState("");
   const [favorite, setFavorite] = useState(false);
-  const [rutineMin, setRutineMin] = useState("120");
+  // const [rutineMin, setRutineMin] = useState("120");
 
   const [extra, setExtra] = useState(false);
   // const [modalVisible, setModalVisible] = useState(false);
@@ -107,7 +107,7 @@ const AddShiftScreen = (props) => {
             onPress={() => setFavorite(!favorite)}
           >
             <Ionicons
-              name={favorite ? "heart" : "heart-outline"}
+              name={favorite ? "star" : "star-outline"}
               size={35}
               color={"#fff"}
             />
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     backgroundColor: Colors.primary,
     borderWidth: 3,
-    borderColor: Colors.primaryDark
+    borderColor: Colors.primaryDark,
   },
   modalHeader: {
     padding: 10,
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
   },
   modalRowText: {
     fontSize: 16,
-    color: Colors.primaryText
+    color: Colors.primaryText,
   },
   modalBtn: {
     marginTop: 10,

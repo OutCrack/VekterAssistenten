@@ -37,7 +37,12 @@ const ProfileScreen = (props) => {
       <ProfileButton
         onItemPressed={() => onItemPressed("SalaryProfile")}
         icon="archive"
-        rowText="Dine Lønnsprofiler"
+        rowText="Mine Lønnsprofiler"
+      />
+      <ProfileButton
+        onItemPressed={() => onItemPressed("FavoriteShifts")}
+        icon="star"
+        rowText="Markerte Vakter"
       />
       <ProfileButton
         onItemPressed={() => console.log('onItemPressed("innboks")')}

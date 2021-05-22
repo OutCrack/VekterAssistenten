@@ -20,8 +20,6 @@ const ShiftDetailScreen = (props) => {
   const dispatch = useDispatch();
   const [showMenu, setShowMenu] = useState(false);
 
-  console.log(selectedShift.paidLunch);
-
   const deleteHandler = () => {
     // console.log("Delete  id: " + selectedShift.id)
     Alert.alert(

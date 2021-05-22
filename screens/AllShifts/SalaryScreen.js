@@ -7,6 +7,7 @@ import SalaryRow from "../../components/UI/SalaryRow";
 import HourCalc from "../../utility/hourCalculation";
 import SalaryCalc from "../../utility/earningsCalculation";
 import Colors from "../../constants/Colors";
+import Separator from "../../components/Separator";
 
 const SalaryScreen = (props) => {
   const { selectedMonth, year } = props.route.params;
@@ -16,28 +17,6 @@ const SalaryScreen = (props) => {
   );
   let shifts = [];
   let overtime = [];
-
-  // THIS MUST BE BETTER
-  let salaryProfile;
-  allSalaryProfiles.forEach((sp) => {
-    const startDate = sp.startDate.split("-");
-    const endDate = sp.endDate.split("-");
-    if (year >= parseInt(startDate[0]) && year <= parseInt(endDate[0])) {
-      salaryProfile = sp;
-    }
-  });
-
-  allShifts.forEach((element) => {
-    let month = element.date.split("-");
-    if (parseInt(month[1]) === selectedMonth) {
-      if (element.type === "normal") {
-        shifts.push(element);
-      } else if (element.type === "overtime") {
-        overtime.push(element);
-      }
-    }
-  });
-
   let TOTAL = 0.0;
   let hoursShift = 0.0,
     night = 0.0,
@@ -56,6 +35,28 @@ const SalaryScreen = (props) => {
   let overtimeMonthlyCash = 0.0,
     overtime50Cash = 0.0,
     overtime100Cash = 0.0;
+
+  // THIS MUST BE BETTER
+  let salaryProfile;
+  
+  allSalaryProfiles.forEach((sp) => {
+    const startDate = sp.startDate.split("-");
+    const endDate = sp.endDate.split("-");
+    if (year >= parseInt(startDate[0]) && year <= parseInt(endDate[0])) {
+      salaryProfile = sp;
+    }
+  });
+
+  allShifts.forEach((element) => {
+    let month = element.date.split("-");
+    if (parseInt(month[1]) === selectedMonth) {
+      if (element.type === "normal") {
+        shifts.push(element);
+      } else if (element.type === "overtime") {
+        overtime.push(element);
+      }
+    }
+  });
 
   // Calulation shifts and overtime
   shifts.forEach((value) => {
@@ -178,36 +179,43 @@ const SalaryScreen = (props) => {
             hours={hoursShift.toFixed(2)}
             earnings={hoursCash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Nattillegg"
             hours={night.toFixed(2)}
             earnings={nightCash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Lørdag-/søndagstillegg"
             hours={weekend.toFixed(2)}
             earnings={weekendCash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Mertid"
             hours={(hoursShift - salaryProfile.monthlyHours).toFixed(2)}
             earnings={overtimeMonthlyCash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Overtidstillegg 50%"
             hours={hoursOvertime50.toFixed(2)}
             earnings={overtime50Cash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Overtidstillegg 100%"
             hours={hoursOvertime100.toFixed(2)}
             earnings={overtime100Cash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Diett v/overtid"
             hours={foodMoneyCount}
             earnings={foodMoneyCash.toFixed(2)}
           />
+          <Separator />
           <SalaryRow
             title="Helligdagstllegg"
             hours={redDay.toFixed(2)}
